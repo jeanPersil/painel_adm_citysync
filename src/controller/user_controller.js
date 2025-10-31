@@ -142,8 +142,7 @@ class UserController {
 
       return res.status(200).json({
         success: true,
-        message:
-          "Se o e-mail estiver cadastrado em nosso sistema, um link de recuperação será enviado.",
+        redirect: "/modificarSenha",
       });
     } catch (error) {
       console.error("Erro ao solicitar recuperação de senha:", error.message);

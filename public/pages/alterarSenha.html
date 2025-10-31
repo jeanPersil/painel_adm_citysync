@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+
+            :root {
+  --primary: #06b6d4;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --ring: rgba(6, 182, 212, 0.3);
+  --bg: #f1f5f9;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: var(--bg);
+  color: var(--text);
+}
+
+form {
+  background: var(--card);
+  padding: 2rem 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 400px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--primary);
+  font-size: 1.8rem;
+}
+
+form div {
+  margin-bottom: 1.2rem;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e2e8f0;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+button {
+  width: 100%;
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background: #0891b2;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+    </style>
+    <title>Alterar Senha</title>
+</head>
+<body>
+    <h1>Alterar Senha</h1>
+    <form id="alterarSenhaForm">
+        <div>
+            <label for="token">Token enviado por email:</label>
+            <input type="text" id="token" name="token" required>
+        </div>
+        <div>
+            <label for="novaSenha">Nova Senha:</label>
+            <input type="password" id="novaSenha" name="novaSenha" required>
+        </div>
+        <div>
+            <label for="confirmarSenha">Confirmar Nova Senha:</label>
+            <input type="password" id="confirmarSenha" name="confirmarSenha" required>
+        </div>
+        <button type="submit">Alterar Senha</button>
+    </form>
+</body>
+</html>

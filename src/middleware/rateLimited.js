@@ -1,8 +1,8 @@
 const rateLimit = require("express-rate-limit");
 
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100,
+  windowMs: 5 * 60 * 1000, // 15 minutos
+  max: 300,
   message: (req, res) => {
     res.setHeader("Content-Type", "application/json");
     return JSON.stringify({
