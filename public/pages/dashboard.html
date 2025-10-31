@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard • CitySync</title>
+    <link rel="stylesheet" href="/CSS/dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Adicionando Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+
+  <body>
+    <div class="dashboard-container">
+      <aside class="barra-lateral">
+        <div class="barra-lateral-header">
+          <h2><i class="fas fa-city"></i> CitySync</h2>
+        </div>
+
+        <nav class="barra-lateral-nav">
+          <a href="/dashboard" class="nav-item active">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="/gestao" class="nav-item">
+            <i class="fa-solid fa-file-alt"></i>
+            <span>Reports</span>
+          </a>
+          <a href="/usuario" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Usuário</span>
+          </a>
+          <a href="/configuracao" class="nav-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Configurações</span>
+          </a>
+        </nav>
+
+        <div class="barra-lateral-footer">
+          <div class="modo-toggle">
+            <span>Modo Escuro</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <a href="#" id="btnSair" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Sair</span>
+          </a>
+        </div>
+      </aside>
+
+      <main class="conteudo-principal">
+        <header class="main-header">
+          <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1>Dashboard</h1>
+          </div>
+          <div class="header-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Pesquisar..." />
+            </div>
+            <div class="header-icons">
+              <div class="notification-bell">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+              </div>
+              <div class="perfil-usuario">
+                <div class="avatar-container">
+                  <i class="fas fa-user-circle profile-avatar"></i>
+                </div>
+                <span class="profile-name"></span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="dashboard-content">
+          <section class="secao-graficos">
+            <div class="chart-container main-chart">
+              <div class="chart-header">
+                <h3>Relatórios por Categoria</h3>
+                <select class="chart-filter" id="periodo-select">
+                  <option value="7">Últimos 7 dias</option>
+                  <option value="30">Últimos 30 dias</option>
+                  <option value="90">Últimos 3 meses</option>
+                </select>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="categoriaChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-container side-chart">
+              <div class="chart-header">
+                <h3>Status de Resolução</h3>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="statusChart"></canvas>
+              </div>
+              <div class="chart-legend" id="pieLegend">
+                <!-- A legenda será gerada pelo JavaScript -->
+              </div>
+            </div>
+          </section>
+
+          <section class="secao-dupla">
+            <div class="tabela-recentes">
+              <div class="tabela-header">
+                <h3>Problemas Recentes</h3>
+                <a href="/gestao" class="view-all"
+                  >Ver todos <i class="fas fa-arrow-right"></i
+                ></a>
+              </div>
+              <table id="reportsRecentes">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Categoria</th>
+                    <th>Localização</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+
+            <div class="atividades-rapidas">
+              <div class="quick-actions">
+                <h3>Ações Rápidas</h3>
+                <div class="action-buttons">
+                  <button class="action-btn">
+                    <i class="fas fa-download"></i>
+                    <span>Exportar Dados</span>
+                  </button>
+                  <button class="action-btn">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtrar</span>
+                  </button>
+                  <button class="action-btn">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Relatório</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="lista-atividades">
+                <h3>Últimas Atividades</h3>
+                <div class="activity-timeline">
+                  <div class="activity-item">
+                    <div class="activity-icon completed">
+                      <i class="fas fa-check"></i>
+                    </div>
+                    <div class="activity-content">
+                      <p>Problema #12343 foi resolvido</p>
+                      <span class="activity-time">Há 2 horas</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-icon in-progress">
+                      <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <div class="activity-content">
+                      <p>Novo report atribuído a você</p>
+                      <span class="activity-time">Há 5 horas</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-icon new">
+                      <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                      <p>Problema prioritário reportado</p>
+                      <span class="activity-time">Há 12 horas</span>
+                    </div>
+                  </div>
+                  <div class="activity-item">
+                    <div class="activity-icon update">
+                      <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="activity-content">
+                      <p>Sistema atualizado para v2.1</p>
+                      <span class="activity-time">Ontem</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <footer class="main-footer">
+          <p>© 2025 CitySync - Sistema de Gestão de Problemas Urbanos</p>
+          <p>v2.1.0 | Última atualização: 16/09/2025</p>
+        </footer>
+      </main>
+    </div>
+    <script type="module" src="/Javascript/utils.js"></script>
+    <script type="module" src="/Javascript/charts.js"></script>
+    <script type="module" src="/Javascript/dashboard.js"></script>
+  </body>
+</html>

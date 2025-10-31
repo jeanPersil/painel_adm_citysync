@@ -1,0 +1,135 @@
+@import url("dashboard.css");
+
+/* Ajustes específicos de configurações */
+.secao-configuracoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.cartao-configuracao {
+  background-color: var(--bg-card);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px var(--shadow-light);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.3s ease;
+}
+
+.cartao-configuracao:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px var(--shadow-medium);
+}
+
+.cartao-configuracao h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.subtitulo-cartao {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.opcao-configuracao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+/* Botões */
+.action-btn, .botao-acao {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+}
+
+.action-btn:hover {
+  background-color: #2980b9;
+}
+
+.botao-acao {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.botao-acao:hover {
+  background-color: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Tabela */
+.tabela-configuracoes table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela-configuracoes th,
+.tabela-configuracoes td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.tabela-configuracoes th {
+  background-color: var(--bg-main);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.status {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-ativo {
+  background-color: var(--success-light, #d5f5e3);
+  color: var(--accent-green);
+}
+
+.status-inativo {
+  background-color: var(--danger-light, #fadbd8);
+  color: var(--accent-red);
+}
+
+

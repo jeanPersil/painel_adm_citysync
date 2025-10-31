@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portal Admin • Login</title>
+
+    <!-- Fontes e ícones -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <!-- Seu CSS -->
+    <link rel="stylesheet" href="/CSS/styles.css" />
+  </head>
+  <body>
+    <main class="container" aria-label="Área de login">
+      <!-- Lado esquerdo -->
+      <section class="lado-esquerdo">
+        <header class="marca" aria-label="Identidade visual">
+          <div class="logotipo">
+            <img src="/imgs/logo.png" alt="Logo CitySync" />
+          </div>
+          <h1>CitySync • Admin</h1>
+        </header>
+
+        <div class="mensagem-principal">
+          <h2>Olá, bem-vindo!</h2>
+          <p>
+            Gerencie e verifique os reports de problemas da cidade em um painel
+            seguro e rápido.
+          </p>
+        </div>
+
+        <ul class="destaques" aria-label="Destaques">
+          <li>Monitoramento em tempo real</li>
+          <li>Filtro por bairro e status</li>
+          <li>Análise e exportação</li>
+        </ul>
+
+        <footer class="rodape-esquerdo">
+          © <span id="ano"></span> CitySync
+        </footer>
+      </section>
+
+      <!-- Lado direito -->
+      <section class="lado-direito" aria-label="Formulário de login">
+        <form id="loginForm" class="cartao" autocomplete="on">
+          <h3>Entrar no painel</h3>
+          <p class="texto-muted">
+            Use suas credenciais administrativas para continuar.
+          </p>
+
+          <!-- Email -->
+          <label class="campo" for="email">
+            <span>Email</span>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="admin@exemplo.com"
+              required
+            />
+          </label>
+
+          <!-- Senha com ícone -->
+          <div class="campo">
+            <label for="senha">Senha</label>
+            <div class="input-senha">
+              <input
+                type="password"
+                id="senha"
+                name="senha"
+                placeholder="••••••••"
+                required
+              />
+              <span class="toggle-senha">
+                <i id="iconeSenha" class="fa fa-eye"></i>
+              </span>
+            </div>
+          </div>
+
+          <!-- Opções -->
+          <div class="linha entre centro">
+            <label class="checkbox">
+              <input type="checkbox" id="lembrar" name="lembrar" />
+              <span>Lembrar-me</span>
+            </label>
+            <a class="link" href="/esqueciSenha">Esqueci minha senha</a>
+          </div>
+
+          <!-- Botão submit -->
+          <button class="botao" type="submit">Entrar</button>
+
+          <div class="separador" role="separator" aria-label="ou"></div>
+          <div class="texto-pequeno">
+            Protegido por reCAPTCHA • Termos • Privacidade
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- Script do login -->
+    <script type="module" src="/Javascript/login.js"></script>
+  </body>
+</html>

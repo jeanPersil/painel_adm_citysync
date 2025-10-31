@@ -1,0 +1,464 @@
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestão de Reports • CitySync</title>
+    <link rel="stylesheet" href="/CSS/reports.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container-painel">
+      <aside class="barra-lateral">
+        <div class="sidebar-header">
+          <h2><i class="fas fa-city"></i> <span>CitySync</span></h2>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="/dashboard" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+          <a href="/gestao" class="nav-item active">
+            <i class="fa-solid fa-file-alt"></i>
+            <span>Reports</span>
+          </a>
+          <a href="/usuario" class="nav-item">
+            <i class="fa-solid fa-user"></i>
+            <span>Usuário</span>
+          </a>
+          <a href="/configuracao" class="nav-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Configurações</span>
+          </a>
+        </nav>
+        <div class="barra-lateral-footer">
+          <div class="modo-toggle">
+            <span>Modo Escuro</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <div class="sidebar-footer">
+            <a href="#" id="btnSair" class="botao-sair">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Sair</span>
+            </a>
+          </div>
+        </div>
+      </aside>
+
+      <main class="conteudo-principal">
+        <header class="main-header">
+          <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1>Gestão de Reports</h1>
+          </div>
+          <div class="header-right">
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Pesquisar reports..." />
+            </div>
+            <div class="header-icons">
+              <div class="notification-bell">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count">3</span>
+              </div>
+              <div class="user-profile">
+                <div class="avatar-container">
+                  <i class="fas fa-user-circle profile-avatar"></i>
+                </div>
+                <span class="profile-name"></span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="main-content">
+          <div class="estatisticas-rapidas">
+            <div class="estatistica-card">
+              <div class="estatistica-icon">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div class="estatistica-info">
+                <span class="estatistica-valor" id="reports_total"></span>
+                <span class="estatistica-label">Total de Reports</span>
+              </div>
+            </div>
+            <div class="estatistica-card">
+              <div class="estatistica-icon pendente">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="estatistica-info">
+                <span class="estatistica-valor" id="reports_pendentes"></span>
+                <span class="estatistica-label">Pendentes</span>
+              </div>
+            </div>
+            <div class="estatistica-card">
+              <div class="estatistica-icon andamento">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <div class="estatistica-info">
+                <span class="estatistica-valor" id="reports_andamento"></span>
+                <span class="estatistica-label">Em Andamento</span>
+              </div>
+            </div>
+            <div class="estatistica-card">
+              <div class="estatistica-icon resolvido">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <div class="estatistica-info">
+                <span class="estatistica-valor" id="reports_resolvidos"></span>
+                <span class="estatistica-label">Resolvidos</span>
+              </div>
+            </div>
+          </div>
+
+          <section class="secao-filtros">
+            <div class="filtros-header">
+              <h2>Filtros</h2>
+              <div class="acoes-header">
+                <button class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Novo Report
+                </button>
+                <button class="btn btn-secondary">
+                  <i class="fas fa-download"></i> Exportar
+                </button>
+              </div>
+            </div>
+
+            <div class="filtros-grid">
+              <div class="search-field">
+                <i class="fas fa-search"></i>
+                <input
+                  type="text"
+                  class="filter-input"
+                  placeholder="Pesquisar..."
+                />
+              </div>
+              <input type="text" class="filter-input" placeholder="Bairro" />
+              <input type="date" class="filter-input" />
+              <div class="select-field">
+                <select>
+                  <option value="todos">Status: Todos</option>
+                  <option value="Pendente">Pendente</option>
+                  <option value="Em andamento">Em andamento</option>
+                  <option value="Resolvido">Resolvido</option>
+                </select>
+              </div>
+              <div class="select-field">
+                <select>
+                  <option value="">Categoria: Todas</option>
+                  <option value="Buraco">Buraco</option>
+                  <option value="Iluminação">Iluminação</option>
+                  <option value="Lixo">Lixo</option>
+                  <option value="Semáforo">Semáforo</option>
+                  <option value="Vazamento/esgoto">Vazamento/esgoto</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Outros">Outros</option>
+                </select>
+              </div>
+              <div class="filtro-botoes">
+                <button class="botao-primario">Aplicar Filtros</button>
+                <button class="botao-secundario">Limpar</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="secao-tabela">
+            <div class="tabela-header">
+              <h3>Reports Recentes</h3>
+              <div class="tabela-info">
+                <span>Mostrando 1-10 de 265 resultados</span>
+                <div class="tabela-controles">
+                  <button class="btn-icon">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <button class="btn-icon">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                  <button class="btn-icon">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="container-tabela">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="check-column">
+                      <input type="checkbox" />
+                    </th>
+                    <th>ID <i class="fas fa-sort"></i></th>
+                    <th>Bairro <i class="fas fa-sort"></i></th>
+                    <th>Data <i class="fas fa-sort"></i></th>
+                    <th>Status <i class="fas fa-sort"></i></th>
+                    <th>Categoria <i class="fas fa-sort"></i></th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox" /></td>
+                    <td>#001</td>
+                    <td>Centro</td>
+                    <td>15/12/2024</td>
+                    <td><span class="status status-pending">Pendente</span></td>
+                    <td><span class="prioridade urgente">Urgente</span></td>
+                    <td>
+                      <div class="acoes">
+                        <button class="botao-acao view-btn" data-id="001">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="botao-acao">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="botao-acao delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" /></td>
+                    <td>#002</td>
+                    <td>Jardim das Flores</td>
+                    <td>14/12/2024</td>
+                    <td>
+                      <span class="status status-progress">Em andamento</span>
+                    </td>
+                    <td><span class="prioridade alta">Alta</span></td>
+                    <td>
+                      <div class="acoes">
+                        <button class="botao-acao view-btn" data-id="002">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="botao-acao">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="botao-acao delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" /></td>
+                    <td>#003</td>
+                    <td>Vila Nova</td>
+                    <td>13/12/2024</td>
+                    <td>
+                      <span class="status status-resolved">Resolvido</span>
+                    </td>
+                    <td><span class="prioridade media">Média</span></td>
+                    <td>
+                      <div class="acoes">
+                        <button class="botao-acao view-btn" data-id="003">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="botao-acao">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="botao-acao delete">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="tabela-footer">
+              <div class="resultados-info">Mostrando 3 de 265 resultados</div>
+              <div class="paginacao">
+                <button class="btn-pagina">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="btn-pagina active">1</button>
+                <button class="btn-pagina">2</button>
+                <button class="btn-pagina">3</button>
+                <button class="btn-pagina">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <!-- Modal para visualizar detalhes do report -->
+    <div class="modal" id="reportModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Detalhes do Report #<span id="modalReportId">001</span></h3>
+          <button class="modal-close" id="modalClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-grid">
+            <div class="modal-info">
+              <h4>Informações do Report</h4>
+              <div class="info-item">
+                <span class="info-label">Bairro:</span>
+                <span class="info-value" id="modalBairro">Centro</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Data:</span>
+                <span class="info-value" id="modalData">15/12/2024</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Categoria:</span>
+                <span class="info-value" id="modalCategoria"
+                  >Iluminação Pública</span
+                >
+              </div>
+              <div class="info-item">
+                <span class="info-label">Descrição:</span>
+                <span class="info-value" id="modalDescricao"
+                  >Poste de luz quebrado na Rua Principal</span
+                >
+              </div>
+            </div>
+            <div class="modal-status">
+              <h4>Status e Prioridade</h4>
+              <div class="info-item">
+                <span class="info-label">Status:</span>
+                <span class="info-value" id="modalStatus">Pendente</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Prioridade:</span>
+                <span class="info-value" id="modalPrioridade">Urgente</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Responsável:</span>
+                <span class="info-value" id="modalResponsavel">João Silva</span>
+              </div>
+              <div class="info-item">
+                <span class="info-label">Data Prevista:</span>
+                <span class="info-value" id="modalDataPrevista"
+                  >20/12/2024</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="modal-imagens">
+            <h4>Imagens do Report</h4>
+            <div class="imagens-grid">
+              <div class="imagem-placeholder">
+                <i class="fas fa-image"></i>
+                <span>Imagem 1</span>
+              </div>
+              <div class="imagem-placeholder">
+                <i class="fas fa-image"></i>
+                <span>Imagem 2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary">Fechar</button>
+          <button class="btn btn-primary">Editar Report</button>
+        </div>
+      </div>
+    </div>
+
+    <!--- Modal para editar-->
+
+    <div class="modal" id="editReportModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Editar Report #<span id="editModalReportId"></span></h3>
+          <button class="modal-close" id="editModalClose">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <form id="editReportForm">
+          <div class="modal-body">
+            <input type="hidden" id="editReportInternalId" />
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="editBairro">Bairro/Endereço</label>
+                <input
+                  type="text"
+                  id="editBairro"
+                  class="form-input"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="editData">Data</label>
+                <input type="date" id="editData" class="form-input" required />
+              </div>
+
+              <div class="form-group">
+                <label for="editCategoria">Categoria</label>
+                <select id="editCategoria" class="form-select" required>
+                  <option value="Buraco">Buraco</option>
+                  <option value="Iluminação">Iluminação</option>
+                  <option value="Lixo">Lixo</option>
+                  <option value="Semáforo">Semáforo</option>
+                  <option value="Vazamento/esgoto">Vazamento/esgoto</option>
+                  <option value="Transporte">Transporte</option>
+                  <option value="Outros">Outros</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="editStatus">Status</label>
+                <select id="editStatus" class="form-select" required>
+                  <option value="Pendente">Pendente</option>
+                  <option value="Em andamento">Em andamento</option>
+                  <option value="Resolvido">Resolvido</option>
+                </select>
+              </div>
+
+              <div class="form-group form-group-full">
+                <label for="editDescricao">Descrição</label>
+                <textarea
+                  id="editDescricao"
+                  class="form-input"
+                  rows="4"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="cancelEditReport"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" id="saveEditedReport">
+              Salvar Alterações
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Overlay para menu mobile -->
+    <div class="overlay" id="overlay"></div>
+    <script type="module" src="/Javascript/utils.js"></script>
+    <script type="module" src="/Javascript/reports.js"></script>
+  </body>
+</html>

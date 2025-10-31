@@ -1,0 +1,524 @@
+:root{
+  --fundo1:#4f46e5;
+  --fundo2:#06b6d4;
+  --cartao:#ffffff;
+  --texto:#0f172a;
+  --texto-muted:#64748b;
+  --anel:rgba(79,70,229,.35);
+  --sombra:0 10px 30px rgba(2,6,23,.25);
+  --borda:1px solid rgba(255,255,255,.18);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,Apple Color Emoji,Segoe UI Emoji;
+  color:var(--texto);
+  background:radial-gradient(1200px 800px at 10% 30%, rgba(255,255,255,.08), transparent 70%) no-repeat,
+             radial-gradient(900px 700px at 90% 80%, rgba(255,255,255,.06), transparent 70%) no-repeat,
+             linear-gradient(135deg,var(--fundo1),var(--fundo2));
+  display:grid; 
+  place-items:center; 
+  padding:24px;
+}
+
+/* Header para mobile */
+.mobile-header {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 16px;
+  z-index: 100;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  color: var(--fundo1);
+}
+
+.mobile-logo img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.mobile-menu-toggle {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--texto);
+  cursor: pointer;
+  padding: 5px;
+}
+
+.container{
+  width:min(1100px,100%);
+  min-height:560px;
+  background:rgba(255,255,255,.06);
+  border:var(--borda);
+  border-radius:24px; overflow:hidden;
+  display:grid; grid-template-columns:1.1fr .9fr;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--sombra);
+}
+
+.lado-esquerdo{
+  position:relative; 
+  padding:48px 48px 56px; 
+  color:#fff; 
+  display:flex; 
+  flex-direction:column; 
+  gap:36px; 
+  justify-content:space-between; 
+  background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.02) 30%) no-repeat;
+}
+
+.marca{
+  display:flex; 
+  align-items:center; 
+  gap:12px
+}
+
+.logotipo{
+  width:100px; 
+  height:100px; 
+  border-radius:12px; 
+  background:rgba(255,255,255,.18);
+  display:grid; place-items:center
+}
+
+.logotipo svg{
+  width:26px; 
+  height:26px; 
+  fill:#fff
+}
+
+.marca h1{
+  font-size:18px; 
+  margin:0; 
+  font-weight:800; 
+  letter-spacing:.3px; 
+  color:#fff
+}
+
+.mensagem-principal h2{
+  font-size:44px; 
+  line-height:1.05; 
+  margin:0; 
+  font-weight:800; 
+  text-shadow:0 2px 12px rgba(0,0,0,.25)
+}
+
+.mensagem-principal p{
+  margin:0; 
+  max-width:32ch; 
+  color:#e2e8f0
+}
+
+.destaques{
+  list-style:none; 
+  margin:0; 
+  padding:0; 
+  display:grid; 
+  gap:12px; 
+  color:#e2e8f0
+}
+
+.destaques li{
+  display:flex; 
+  align-items:center; 
+  gap:10px;
+  font-size: 15px;
+}
+
+.destaques li i {
+  font-size: 14px;
+  width: 20px;
+}
+
+.rodape-esquerdo{
+  opacity:.9;
+  font-size: 14px;
+}
+
+.lado-direito{
+  display:grid; 
+  place-items:center; 
+  padding:28px;
+}
+
+.cartao{
+  width:min(440px, 92vw);
+  background:var(--cartao);
+  border-radius:20px;
+  box-shadow:0 10px 25px rgba(2,6,23,.15);
+  border:1px solid #e2e8f0;
+  padding:28px;
+  display:grid; gap:16px;
+}
+
+.logotipo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cartao h3{
+  margin:0; 
+  font-size:22px
+}
+
+.texto-muted{
+  margin:0; 
+  color:var(--texto-muted);
+  font-size: 15px;
+}
+
+.campo{
+  display:grid; 
+  gap:8px
+}
+
+.campo input{
+  height:48px; 
+  padding:0 14px; 
+  border-radius:14px;
+  border:1px solid #cbd5e1; outline:none; font-size:16px;
+  transition:border-color .2s, box-shadow .2s, transform .05s;
+  background:#f8fafc;
+}
+
+.campo input:focus{
+  border-color:#818cf8; 
+  box-shadow:0 0 0 6px var(--anel)
+}
+
+/* Campo de senha com ícone de olho */
+.input-senha {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-senha input {
+  width: 100%;
+  padding-right: 40px; 
+}
+
+.toggle-senha {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: var(--texto-muted);
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.toggle-senha:hover {
+  color: var(--texto);
+}
+
+.linha{
+  display:flex; 
+  gap:12px
+}
+
+.entre{
+  justify-content:space-between
+}
+
+.centro{
+  align-items:center
+}
+
+.checkbox{
+  display:flex; 
+  gap:8px; 
+  align-items:center; 
+  color:var(--texto-muted); 
+  font-size:14px
+}
+
+.link{
+  color:#4f46e5; 
+  text-decoration:none;
+  font-size: 14px;
+}
+
+.link:hover{
+  text-decoration:underline
+}
+
+.botao{
+  height:48px; 
+  border:none; 
+  border-radius:14px; 
+  font-weight:700; 
+  font-size:16px;
+  background:linear-gradient(135deg,#4f46e5,#06b6d4);
+  color:#fff; 
+  cursor:pointer; 
+  transition:transform .05s ease, filter .2s ease, box-shadow .2s ease;
+  box-shadow:0 10px 22px rgba(79,70,229,.35);
+  position: relative;
+  overflow: hidden;
+}
+
+.botao-texto, .botao-loading {
+  transition: opacity 0.3s ease;
+}
+
+.botao-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+}
+
+.botao.carregando .botao-texto {
+  opacity: 0;
+}
+
+.botao.carregando .botao-loading {
+  opacity: 1;
+}
+
+.botao:hover{
+  filter:brightness(1.05)
+}
+
+.botao:active{
+  transform:translateY(1px)
+}
+
+.botao.fantasma{
+  background:#fff; 
+  color:#0f172a; 
+  border:1px solid #e2e8f0; 
+  box-shadow:none;
+}
+
+.divider, .separador{
+  height:1px; 
+  background:#e2e8f0;
+  margin:4px 0
+}
+
+.texto-pequeno{
+  font-size:12px; 
+  color:var(--texto-muted); 
+  text-align:center
+}
+
+/* ===== RESPONSIVIDADE ===== */
+
+/* Tablets (até 900px) */
+@media (max-width: 900px){
+  .container{
+    grid-template-columns: 1fr;
+    min-height:auto; 
+    padding:20px; 
+    border-radius: 20px;
+    border: var(--borda);
+    background: rgba(255,255,255,.06);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--sombra);
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .lado-esquerdo{
+    padding: 36px 24px 32px; 
+    gap: 28px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .marca {
+    justify-content: center;
+  }
+
+  .mensagem-principal h2{
+    font-size: 32px;
+  }
+  
+  .mensagem-principal p{
+    font-size: 16px; 
+    max-width: none; 
+  }
+  
+  .lado-direito{
+    padding: 0 24px 24px; 
+  }
+  
+  .cartao{
+    width: 100%; 
+    max-width: 440px; 
+    margin: 0 auto; 
+  }
+}
+
+/* Tablets pequenos e smartphones grandes (até 768px) */
+@media (max-width: 768px) {
+  body {
+    padding: 16px;
+    display: block;
+    background: linear-gradient(135deg,var(--fundo1),var(--fundo2));
+  }
+  
+  .mobile-header {
+    display: flex;
+  }
+  
+  .container {
+    margin-top: 70px;
+    border-radius: 16px;
+  }
+  
+  .lado-esquerdo {
+    padding: 28px 20px;
+    gap: 24px;
+  }
+  
+  .logotipo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .mensagem-principal h2 {
+    font-size: 28px;
+  }
+  
+  .destaques {
+    gap: 10px;
+  }
+  
+  .lado-direito {
+    padding: 0 16px 20px;
+  }
+  
+  .cartao {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+}
+
+/* Smartphones (até 480px) */
+@media (max-width: 480px) {
+  body {
+    padding: 12px;
+  }
+  
+  .container {
+    margin-top: 60px;
+    padding: 16px;
+    border-radius: 14px;
+  }
+  
+  .lado-esquerdo {
+    padding: 24px 16px;
+    gap: 20px;
+  }
+  
+  .marca {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+  
+  .marca h1 {
+    font-size: 16px;
+  }
+  
+  .logotipo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .mensagem-principal h2 {
+    font-size: 24px;
+  }
+  
+  .mensagem-principal p {
+    font-size: 15px;
+  }
+  
+  .destaques li {
+    font-size: 14px;
+  }
+  
+  .lado-direito {
+    padding: 0 12px 16px;
+  }
+  
+  .cartao {
+    padding: 20px 16px;
+    border-radius: 14px;
+    gap: 14px;
+  }
+  
+  .cartao h3 {
+    font-size: 20px;
+  }
+  
+  .linha.entre {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .link {
+    margin-left: 0;
+  }
+  
+  .campo input {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .botao {
+    height: 44px;
+    font-size: 15px;
+  }
+  
+  .texto-pequeno {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+}
+
+/* Smartphones muito pequenos (até 360px) */
+@media (max-width: 360px) {
+  .lado-esquerdo {
+    padding: 20px 12px;
+  }
+  
+  .mensagem-principal h2 {
+    font-size: 22px;
+  }
+  
+  .cartao {
+    padding: 18px 14px;
+  }
+  
+  .checkbox span, .link {
+    font-size: 13px;
+  }
+}
