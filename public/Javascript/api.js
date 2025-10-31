@@ -66,23 +66,33 @@ class Api {
     }
   }
 
-  async obterReportsFiltrados(parametros) {
-    try {
-      const response = await fetch(
-        `${this.url_api}/reports/filtrados?${parametros.toString()}`
-      );
 
-      const result = await response.json();
+async obterReportsFiltrados(parametrosObjeto) {
+  try {
 
-      return result;
-    } catch (error) {
-      console.error("Erro em obterReportsFiltrados:", error);
-      return {
-        success: false,
-        message: error.message || error,
-      };
+    const queryString = new URLSearchParams(parametrosObjeto).toString();
+
+
+    const response = await fetch(
+      `${this.url_api}/reports/filtrados?${queryString}`
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+
+      throw new Error(result.message || "Erro ao carregar reportes.");
     }
+    return result;
+
+  } catch (error) {
+    console.error("Erro em obterReportsFiltrados:", error);
+    return {
+      success: false,
+      message: error.message || "Falha na requisição",
+    };
   }
+}
 
   async atualizarReport(reportId, dadosDoFormulario) {
     try {

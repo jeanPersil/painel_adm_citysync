@@ -12,6 +12,8 @@
  * NÃO acessa banco diretamente (repository)
  */
 
+
+
 const reportRepositories = require("../repositories/reportsRepositories");
 const ReportModel = require("../models/reportModel");
 const { mapearCategoria, mapearStatus } = require("../utils/utils");
@@ -46,10 +48,28 @@ class ReportService {
     };
   }
 
-  async filtrarReportes(filtros) {
-    const reportes = await reportRepositories.filtrar(filtros);
-    return reportes;
-  }
+async filtrarReportes(filtros, page, limit) {
+  
+
+  const safePage = Number(page) > 0 ? Number(page) : 1;
+  const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
+
+  const { reportsData, total } = await reportRepositories.filtrar(
+    filtros,
+    safePage,
+    safeLimit
+  );
+
+
+  const totalPages = Math.ceil(total / safeLimit);
+
+  return {
+    reports: reportsData,
+    totalItems: total,
+    totalPages: totalPages,
+    currentPage: safePage,
+  };
+}
 
   async editarReport(id, dados) {
     const { endereco, descricao, categoria, status, url_imagem } = dados;

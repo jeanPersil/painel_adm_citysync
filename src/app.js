@@ -7,12 +7,13 @@ const { globalLimiter } = require("./middleware/rateLimited");
 const pageRoutes = require("./routes/pageRoutes");
 const userRoutes = require("./routes/userRoutes");
 const reportRoutes = require("./routes/reportRoutes");
-const { json } = require("stream/consumers");
+
 
 const app = express();
 
 // Middlewares
 app.use(globalLimiter);
+app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

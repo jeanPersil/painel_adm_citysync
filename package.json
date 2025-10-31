@@ -16,6 +16,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
+    "node-cache": "^5.1.2",
     "supabase": "^2.48.3"
   },
   "devDependencies": {

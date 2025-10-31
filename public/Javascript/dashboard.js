@@ -9,6 +9,8 @@ import {
 
 import { api } from "./api.js";
 
+
+
 // ===== CONSTANTES E CONFIGURAÇÕES =====
 const CONFIG = {
   ATUALIZACAO_TEMPO_REAL: 15000, // 15 segundos
@@ -19,6 +21,9 @@ const CONFIG = {
     MENU_ABERTO: "menuAberto",
   },
 };
+
+let paginaAtual = 1;
+const limitePorPagina = 10;
 
 // ===== ELEMENTOS DO DOM =====
 const btnSair = document.getElementById("btnSair");
@@ -610,11 +615,13 @@ async function mostrarProblemasRecentes() {
 
   const reports = await api.obterReportsPorPeriodo(7);
 
-  const todasCategorias = [
+  let todasCategorias = [
     ...reports.problemasResolvidos,
     ...reports.problemasEmAndamento,
     ...reports.problemasPendentes,
   ];
+
+  todasCategorias = todasCategorias.slice(0, 10);
 
   todasCategorias.forEach((item) => {
     const tr = document.createElement("tr");

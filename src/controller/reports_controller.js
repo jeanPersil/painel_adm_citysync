@@ -40,15 +40,18 @@ class ReportsController {
 
   async listarEfiltrar(req, res) {
     try {
-      const filtros = req.query;
+      const { page = 1, limit = 10, ...filtros } = req.query;
 
-      const reportes = await reportService.filtrarReportes(filtros);
+      const pageInt = parseInt(page);
+      const limitInt = parseInt(limit);
 
-      return res.status(200).json({
-        success: true,
-        reports: reportes,
-        total: reportes.length,
-      });
+      const reportes = await reportService.filtrarReportes(filtros, pageInt, limitInt);
+
+     return res.status(200).json({
+      success: true,
+      ...reportes,
+    }); 
+
     } catch (error) {
       console.error("Erro interno:", error);
       return res.status(500).json({
