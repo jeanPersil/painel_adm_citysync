@@ -145,6 +145,12 @@ class UserController {
         redirect: "/modificarSenha",
       });
     } catch (error) {
+      if (error.message.includes("Email address")) {
+        res.status(401).json({
+          success: false,
+          message: "O endereço de email é invalido ou não esta cadastrado.",
+        });
+      }
       console.error("Erro ao solicitar recuperação de senha:", error.message);
 
       return res.status(500).json({
@@ -160,7 +166,7 @@ class UserController {
       const { email, token, novaSenha } = req.body;
 
       if (!email || !token || !novaSenha) {
-        return res.tatus(400).json({
+        return res.status(400).json({
           success: false,
           message: "Todos os campos são obrigatorios",
         });

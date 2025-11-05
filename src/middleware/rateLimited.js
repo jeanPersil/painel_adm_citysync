@@ -34,7 +34,7 @@ const loginLimiter = rateLimit({
 });
 
 const recuperarSenhaLimit = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 1 * 60 * 1000,
   max: 3,
   message: (req, res) => {
     res.setHeader("Content-Type", "application/json");
