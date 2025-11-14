@@ -1,7 +1,7 @@
 class Api {
   // AUTENTICAÇÃO ( LOGIN, LOGOUT )
   constructor() {
-    this.url_api = "http://localhost:3000/api";
+    this.url_api = "/api";
   }
 
 
