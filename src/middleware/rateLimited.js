@@ -1,14 +1,14 @@
 import rateLimit from "express-rate-limit";
 const globalLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, 
-  max: 300, 
+  windowMs: 5 * 60 * 1000, 
+  max: 200, 
   standardHeaders: true,
   legacyHeaders: false,
 
-  // --- ADICIONE ISTO AQUI ---
-  // Se retornar true, o limitador ignora a requisição (deixa passar)
+
+
   skip: (req, res) => {
-    // 1. Libera a própria página de bloqueio para não dar loop
+  
     if (req.url.includes('/pages/bloqueado.html')) return true;
     
     return false;
@@ -34,6 +34,7 @@ const globalLimiter = rateLimit({
 const loginLimiter = rateLimit({
   windowMs: 2 * 60 * 1000,
   max: 5,
+  statusCode: 423,
   message: (req, res) => {
     res.setHeader("Content-Type", "application/json");
     return JSON.stringify({
@@ -49,6 +50,7 @@ const loginLimiter = rateLimit({
 const recuperarSenhaLimit = rateLimit({
   windowMs: 1 * 60 * 1000,
   max: 3,
+  statusCode: 423,
   message: (req, res) => {
     res.setHeader("Content-Type", "application/json");
     return JSON.stringify({

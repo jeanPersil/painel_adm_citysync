@@ -8,7 +8,7 @@ class Api {
   checkRateLimit(response) {
     if (response.status === 429) {
       window.location.href = "/pages/bloqueado.html";
-      return true; // Retorna true avisando que foi bloqueado
+      return true; o
     }
     return false;
   }
