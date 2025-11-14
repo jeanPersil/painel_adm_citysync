@@ -20,7 +20,7 @@ class ReportRepositories {
       .from("listar_reportes")
       .select("*")
       .gte("data_criacao", dataInicio.toISOString())
-      .lte("data_criacao", dataFim.toISOString());
+      .lte("data_criacao", dataFim.toISOString()).order("data_criacao", { ascending: false });;
 
     if (error) {
       console.error("Erro ao buscar usuario por ID: " + error);
@@ -59,10 +59,16 @@ class ReportRepositories {
     }
     if (pesquisar) {
       const termo = `%${pesquisar}%`;
+      
+      
       query = query.or(
-        `descricao.ilike.${termo},endereco.ilike.${termo},nome_categoria.ilike.${termo}`
+        `descricao.ilike."${termo}",endereco.ilike."${termo}",nome_categoria.ilike."${termo}"`
       );
     }
+
+
+    query = query.order("data_criacao", { ascending: false });
+    // --------------------------------
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -74,8 +80,8 @@ class ReportRepositories {
       throw new Error("Falha ao filtrar os reportes: " + error.message);
 
     return { reportsData, total: count };
-  }
 
+  }
   async editar(id, dadosParaAtualizar) {
     const { data, error } = await supabase
       .from("reportes")

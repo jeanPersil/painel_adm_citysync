@@ -121,7 +121,8 @@ async obterReportsFiltrados(parametrosObjeto) {
         status: dadosDoFormulario.nome_status,
       };
 
-      const response = await fetch(`${this.url_api}/${reportId}`, {
+
+      const response = await fetch(`${this.url_api}/reports/editar/${reportId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
