@@ -1,6 +1,6 @@
 import rateLimit from "express-rate-limit";
 const globalLimiter = rateLimit({
-  windowMs: 20 * 60 * 1000, 
+  windowMs: 1 * 60 * 1000, 
   max: 300, 
   standardHeaders: true,
   legacyHeaders: false,
