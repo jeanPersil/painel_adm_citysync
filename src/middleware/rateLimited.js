@@ -1,17 +1,30 @@
 import rateLimit from "express-rate-limit";
-
 const globalLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 15 minutos
-  max: 300,
-  message: (req, res) => {
-    res.setHeader("Content-Type", "application/json");
-    return JSON.stringify({
-      success: false,
-      message: "Muitas requisições deste IP. Tente novamente em 15 minutos.",
-    });
-  },
+  windowMs: 1 * 60 * 1000, 
+  max: 300, 
   standardHeaders: true,
   legacyHeaders: false,
+
+  // --- ADICIONE ISTO AQUI ---
+  // Se retornar true, o limitador ignora a requisição (deixa passar)
+  skip: (req, res) => {
+    // 1. Libera a própria página de bloqueio para não dar loop
+    if (req.url.includes('/pages/bloqueado.html')) return true;
+    
+    return false;
+  },
+  // ---------------------------
+
+  handler: (req, res, next, options) => {
+    if (req.accepts('html')) {
+       return res.redirect('/pages/bloqueado.html');
+    }
+    res.status(options.statusCode).json({
+      success: false,
+      message: "Muitas requisições. Aguarde.",
+      redirectUrl: "/pages/bloqueado.html"
+    });
+  }
 });
 
 /**
@@ -19,7 +32,7 @@ const globalLimiter = rateLimit({
  * Protege contra ataques de força bruta de senha.
  */
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 2 * 60 * 1000,
   max: 5,
   message: (req, res) => {
     res.setHeader("Content-Type", "application/json");

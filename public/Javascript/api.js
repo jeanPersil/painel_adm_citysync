@@ -1,8 +1,18 @@
 class Api {
   // AUTENTICAÇÃO ( LOGIN, LOGOUT )
   constructor() {
-    this.url_api = "/api";
+    this.url_api = "http://localhost:3000/api";
   }
+
+
+  checkRateLimit(response) {
+    if (response.status === 429) {
+      window.location.href = "/pages/bloqueado.html";
+      return true; // Retorna true avisando que foi bloqueado
+    }
+    return false;
+  }
+
   async login(email, senha) {
     try {
       const response = await fetch(`${this.url_api}/users/login`, {
@@ -10,6 +20,8 @@ class Api {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, senha }),
       });
+
+      if (this.checkRateLimit(response)) return;
 
       const data = await response.json();
 
@@ -35,6 +47,8 @@ class Api {
         credentials: "include",
       });
 
+      if (this.checkRateLimit(response)) return;
+
       const data = await response.json();
 
       return data;
@@ -50,6 +64,8 @@ class Api {
       const response = await fetch(
         `${this.url_api}/reports/periodo?periodo=${periodoDias}`
       );
+
+      if (this.checkRateLimit(response)) return;
 
       const data = await response.json();
 
@@ -76,6 +92,8 @@ async obterReportsFiltrados(parametrosObjeto) {
     const response = await fetch(
       `${this.url_api}/reports/filtrados?${queryString}`
     );
+
+    if (this.checkRateLimit(response)) return;
 
     const result = await response.json();
 
@@ -112,6 +130,8 @@ async obterReportsFiltrados(parametrosObjeto) {
         credentials: "include",
       });
 
+      if (this.checkRateLimit(response)) return;
+
       const result = await response.json();
 
       if (!response.ok) {
@@ -138,6 +158,8 @@ async obterReportsFiltrados(parametrosObjeto) {
       },
     });
 
+    if (this.checkRateLimit(response)) return;
+
     const result = await response.json();
 
     if (!result.success) throw new Error(result.message);
@@ -157,6 +179,8 @@ async obterReportsFiltrados(parametrosObjeto) {
 
         credentials: "include",
       });
+
+      if (this.checkRateLimit(response)) return;
 
       const data = await response.json();
 
