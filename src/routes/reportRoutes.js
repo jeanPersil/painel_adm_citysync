@@ -12,12 +12,14 @@
  * NÃO processa requisições diretamente (controller)
  */
 
-const express = require("express");
-const router = express.Router();
-const middleware = require("../middleware/authMiddleware");
-const reportsController = require("../controller/reports_controller");
+import express from "express";
+import middleware from "../middleware/authMiddleware.js";
+import reportsController from "../controller/reports_controller.js";
 
-router.use(middleware.verificar_autenticacao, middleware.verificarAdmin);
+const router = express.Router();
+const { verificar_autenticacao, verificarAdmin } = middleware;
+
+router.use(verificar_autenticacao, verificarAdmin);
 
 // Rotas de leitura
 router.get("/periodo", reportsController.obterReportesPorPeriodo);
@@ -27,4 +29,4 @@ router.get("/filtrados", reportsController.listarEfiltrar);
 router.put("/editar/:id", reportsController.editarReport);
 router.delete("/deletar/:id", reportsController.deletarReport);
 
-module.exports = router;
+export default router;

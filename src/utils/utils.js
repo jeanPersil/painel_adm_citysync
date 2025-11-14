@@ -27,7 +27,7 @@ function validarEmailBasico(email) {
   return regex.test(email);
 }
 
-module.exports = {
+export {
   mapearCategoria,
   mapearStatus,
   validarEmailBasico,

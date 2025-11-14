@@ -12,7 +12,7 @@
  * NÃO valida dados (service/controller)
  */
 
-const supabase = require("../config");
+import supabase from "../config.js";
 
 class ReportRepositories {
   async reportesPeriodo(dataInicio, dataFim) {
@@ -32,54 +32,49 @@ class ReportRepositories {
 
   // repositories/reportRepository.js
 
-async filtrar(filtros, page, limit) {
-  const { endereco, data, status, pesquisar, categoria } = filtros;
+  async filtrar(filtros, page, limit) {
+    const { endereco, data, status, pesquisar, categoria } = filtros;
 
+    let query = supabase
+      .from("listar_reportes")
+      .select("*", { count: "exact" }); 
 
-  let query = supabase
-    .from("listar_reportes")
-    .select("*", { count: "exact" }); 
+    if (endereco) {
+      query = query.ilike("endereco", `%${endereco}%`);
+    }
+    if (status) {
+      query = query.eq("nome_status", status);
+    }
+    if (categoria) {
+      query = query.eq("nome_categoria", categoria);
+    }
+    if (data) {
+      const inicio = new Date(data);
+      const fim = new Date(data);
+      fim.setDate(fim.getDate() + 1);
 
-  
-  if (endereco) {
-    query = query.ilike("endereco", `%${endereco}%`);
+      query = query
+        .gte("data_criacao", inicio.toISOString())
+        .lt("data_criacao", fim.toISOString());
+    }
+    if (pesquisar) {
+      const termo = `%${pesquisar}%`;
+      query = query.or(
+        `descricao.ilike.${termo},endereco.ilike.${termo},nome_categoria.ilike.${termo}`
+      );
+    }
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+    query = query.range(from, to);
+
+    const { data: reportsData, error, count } = await query;
+
+    if (error)
+      throw new Error("Falha ao filtrar os reportes: " + error.message);
+
+    return { reportsData, total: count };
   }
-  if (status) {
-    query = query.eq("nome_status", status);
-  }
-  if (categoria) {
-    query = query.eq("nome_categoria", categoria);
-  }
-  if (data) {
-    const inicio = new Date(data);
-    const fim = new Date(data);
-    fim.setDate(fim.getDate() + 1);
-
-    query = query
-      .gte("data_criacao", inicio.toISOString())
-      .lt("data_criacao", fim.toISOString());
-  }
-  if (pesquisar) {
-    const termo = `%${pesquisar}%`;
-    query = query.or(
-      `descricao.ilike.${termo},endereco.ilike.${termo},nome_categoria.ilike.${termo}`
-    );
-  }
-
-
-  const from = (page - 1) * limit;
-  const to = from + limit - 1;
-  query = query.range(from, to);
-  
-
-  const { data: reportsData, error, count } = await query;
-
-  if (error)
-    throw new Error("Falha ao filtrar os reportes: " + error.message);
-
-
-  return { reportsData, total: count };
-}
 
   async editar(id, dadosParaAtualizar) {
     const { data, error } = await supabase
@@ -122,4 +117,4 @@ async filtrar(filtros, page, limit) {
   }
 }
 
-module.exports = new ReportRepositories();
+export default new ReportRepositories();

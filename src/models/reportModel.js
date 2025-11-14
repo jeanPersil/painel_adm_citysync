@@ -33,4 +33,4 @@ class ReportModel {
   }
 }
 
-module.exports = ReportModel;
+export default ReportModel;

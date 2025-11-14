@@ -12,11 +12,9 @@
  * NÃO acessa banco diretamente (repository)
  */
 
-
-
-const reportRepositories = require("../repositories/reportsRepositories");
-const ReportModel = require("../models/reportModel");
-const { mapearCategoria, mapearStatus } = require("../utils/utils");
+import reportRepositories from "../repositories/reportsRepositories.js";
+import ReportModel from "../models/reportModel.js";
+import { mapearCategoria, mapearStatus } from "../utils/utils.js";
 
 class ReportService {
   async obterReportesPeriodo(periodoDeReports) {
@@ -48,28 +46,25 @@ class ReportService {
     };
   }
 
-async filtrarReportes(filtros, page, limit) {
-  
+  async filtrarReportes(filtros, page, limit) {
+    const safePage = Number(page) > 0 ? Number(page) : 1;
+    const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
 
-  const safePage = Number(page) > 0 ? Number(page) : 1;
-  const safeLimit = Number(limit) > 0 ? Number(limit) : 10;
+    const { reportsData, total } = await reportRepositories.filtrar(
+      filtros,
+      safePage,
+      safeLimit
+    );
 
-  const { reportsData, total } = await reportRepositories.filtrar(
-    filtros,
-    safePage,
-    safeLimit
-  );
+    const totalPages = Math.ceil(total / safeLimit);
 
-
-  const totalPages = Math.ceil(total / safeLimit);
-
-  return {
-    reports: reportsData,
-    totalItems: total,
-    totalPages: totalPages,
-    currentPage: safePage,
-  };
-}
+    return {
+      reports: reportsData,
+      totalItems: total,
+      totalPages: totalPages,
+      currentPage: safePage,
+    };
+  }
 
   async editarReport(id, dados) {
     const { endereco, descricao, categoria, status, url_imagem } = dados;
@@ -99,4 +94,4 @@ async filtrarReportes(filtros, page, limit) {
   }
 }
 
-module.exports = new ReportService();
+export default new ReportService();

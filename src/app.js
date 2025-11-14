@@ -1,13 +1,13 @@
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const { globalLimiter } = require("./middleware/rateLimited");
+import express from "express";
+
+import path from "path";
+import cookieParser from "cookie-parser";
+import { globalLimiter } from "./middleware/rateLimited.js";
 
 // Importar rotas
-const pageRoutes = require("./routes/pageRoutes");
-const userRoutes = require("./routes/userRoutes");
-const reportRoutes = require("./routes/reportRoutes");
-
+import pageRoutes from "./routes/pageRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import reportRoutes from "./routes/reportRoutes.js";
 
 const app = express();
 
@@ -19,12 +19,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Arquivos estáticos
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.join(import.meta.dirname, "../public")));
 
 // Rotas
 app.use("/", pageRoutes);
 app.use("/api/users", userRoutes);
-
 app.use("/api/reports", reportRoutes);
 
-module.exports = app;
+export default app;

@@ -12,14 +12,11 @@
  * NÃO processa requisições diretamente (controller)
  */
 
-const express = require("express");
-const router = express.Router();
-const userController = require("../controller/user_controller");
+import express from "express";
+import userController from "../controller/user_controller.js";
+import { loginLimiter, recuperarSenhaLimit } from "../middleware/rateLimited.js";
 
-const {
-  loginLimiter,
-  recuperarSenhaLimit,
-} = require("../middleware/rateLimited");
+const router = express.Router();
 
 router.post("/login", loginLimiter, userController.login);
 router.post("/logout", userController.logout);
@@ -33,4 +30,4 @@ router.post("/redefinir_senha", userController.validar_e_trocar_senha);
 
 router.put("/atualizar_dados", userController.editar_dados);
 
-module.exports = router;
+export default router;

@@ -1,5 +1,5 @@
-const userRepositorie = require("../repositories/userRepositorie");
-const supabase = require("../config");
+import userRepositorie from "../repositories/userRepositorie.js";
+import supabase from "../config.js";
 
 class AuthMiddleware {
   async verificar_autenticacao(req, res, next) {
@@ -37,4 +37,4 @@ class AuthMiddleware {
   }
 }
 
-module.exports = new AuthMiddleware();
+export default new AuthMiddleware();

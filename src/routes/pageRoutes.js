@@ -12,70 +12,73 @@
  * NÃO processa requisições diretamente (controller)
  */
 
-const express = require("express");
-const path = require("path");
-const middleware = require("../middleware/authMiddleware");
+import express from "express";
+import path from "path";
+import middleware from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
+const { verificar_autenticacao, verificarAdmin } = middleware;
 
 router.get("/", (req, res) => {
   res.sendFile(
-    path.join(__dirname, "..", "..", "public", "pages", "index.html")
+    path.join(import.meta.dirname, "..", "..", "public", "pages", "index.html")
   );
 });
 
 router.get("/esqueciSenha", (req, res) => {
   res.sendFile(
-    path.join(__dirname, "..", "..", "public", "pages", "esqueci-senha.html")
+    path.join(import.meta.dirname, "..", "..", "public", "pages", "esqueci-senha.html")
   );
 });
 
 router.get(
   "/dashboard",
-  middleware.verificar_autenticacao,
-  middleware.verificarAdmin,
+  verificar_autenticacao,
+  verificarAdmin,
   (req, res) => {
     res.sendFile(
-      path.join(__dirname, "..", "..", "public", "pages", "dashboard.html")
+      path.join(import.meta.dirname, "..", "..", "public", "pages", "dashboard.html")
     );
   }
 );
 
-router.get("/modificarSenha", (req, res) =>{
-    res.sendFile(path.join(__dirname, "..", "..", "public", "pages", "alterarSenha.html"))
-})
-  
+router.get("/modificarSenha", (req, res) => {
+  res.sendFile(
+    path.join(import.meta.dirname, "..", "..", "public", "pages", "alterarSenha.html")
+  );
+});
+
 router.get(
   "/gestao",
-  middleware.verificar_autenticacao,
-  middleware.verificarAdmin,
+  verificar_autenticacao,
+  verificarAdmin,
   (req, res) => {
     res.sendFile(
-      path.join(__dirname, "..", "..", "public", "pages", "gestao.html")
+      path.join(import.meta.dirname, "..", "..", "public", "pages", "gestao.html")
     );
   }
 );
 
 router.get(
   "/usuario",
-  middleware.verificar_autenticacao,
-  middleware.verificarAdmin,
+  verificar_autenticacao,
+  verificarAdmin,
   (req, res) => {
     res.sendFile(
-      path.join(__dirname, "..", "..", "public", "pages", "usuario.html")
+      path.join(import.meta.dirname, "..", "..", "public", "pages", "usuario.html")
     );
   }
 );
 
 router.get(
   "/configuracao",
-  middleware.verificar_autenticacao,
-  middleware.verificarAdmin,
+  verificar_autenticacao,
+  verificarAdmin,
   (req, res) => {
     res.sendFile(
-      path.join(__dirname, "..", "..", "public", "pages", "configuracoes.html")
+      path.join(import.meta.dirname, "..", "..", "public", "pages", "configuracoes.html")
     );
   }
 );
 
-module.exports = router;
+export default router;

@@ -8,7 +8,7 @@
  * - Tratar erros de infraestrutura de dados
  */
 
-const supabase = require("../config");
+import supabase from "../config.js";
 
 class UserRepositories {
   async pegarDadosPeloId(id) {
@@ -27,4 +27,4 @@ class UserRepositories {
   }
 }
 
-module.exports = new UserRepositories();
+export default new UserRepositories();

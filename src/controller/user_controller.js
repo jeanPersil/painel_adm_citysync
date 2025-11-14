@@ -11,8 +11,8 @@
  * NÃO contém regras de negócio (ficam no service)
  */
 
-const { validarEmailBasico } = require("../utils/utils");
-const userServices = require("../services/userService");
+import { validarEmailBasico } from "../utils/utils.js";
+import userServices from "../services/userService.js";
 
 class UserController {
   async login(req, res) {
@@ -191,4 +191,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+export default new UserController();

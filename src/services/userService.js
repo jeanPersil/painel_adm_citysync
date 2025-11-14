@@ -12,9 +12,8 @@
  * NÃO acessa o banco diretamente (isso fica no repository)
  */
 
-const supabase = require("../config");
-const userRepositorie = require("../repositories/userRepositorie");
-const UserRepositories = require("../repositories/userRepositorie"); //
+import supabase from "../config.js";
+import UserRepositories from "../repositories/userRepositorie.js";
 
 class UserService {
   async autenticarAdmin(email, password) {
@@ -112,4 +111,4 @@ class UserService {
   }
 }
 
-module.exports = new UserService();
+export default new UserService();

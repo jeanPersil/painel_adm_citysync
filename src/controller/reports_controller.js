@@ -11,8 +11,7 @@
  * NÃO contém regras de negócio (ficam no service)
  */
 
-const { json } = require("express");
-const reportService = require("../services/reportService");
+import reportService from "../services/reportService.js";
 
 class ReportsController {
   async obterReportesPorPeriodo(req, res) {
@@ -47,10 +46,10 @@ class ReportsController {
 
       const reportes = await reportService.filtrarReportes(filtros, pageInt, limitInt);
 
-     return res.status(200).json({
-      success: true,
-      ...reportes,
-    }); 
+      return res.status(200).json({
+        success: true,
+        ...reportes,
+      }); 
 
     } catch (error) {
       console.error("Erro interno:", error);
@@ -123,7 +122,7 @@ class ReportsController {
   async deletarReport(req, res) {
     try {
       const { id } = req.params;
-      reportService.excluirReport(id);
+      await reportService.excluirReport(id);
 
       return res.status(200).json({
         success: true,
@@ -138,4 +137,4 @@ class ReportsController {
   }
 }
 
-module.exports = new ReportsController();
+export default new ReportsController();
