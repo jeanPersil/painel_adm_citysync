@@ -1,7 +1,7 @@
 class Api {
   // AUTENTICAÇÃO ( LOGIN, LOGOUT )
   constructor() {
-    this.url_api = "http://localhost:3000/api";
+    this.url_api = "/api";
   }
   async login(email, senha) {
     try {
@@ -103,7 +103,7 @@ async obterReportsFiltrados(parametrosObjeto) {
         status: dadosDoFormulario.nome_status,
       };
 
-      const response = await fetch(`/api/reports/editar/${reportId}`, {
+      const response = await fetch(`${this.url_api}/${reportId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
