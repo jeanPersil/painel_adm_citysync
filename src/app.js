@@ -12,7 +12,7 @@ import reportRoutes from "./routes/reportRoutes.js";
 const app = express();
 
 // Middlewares
-app.use(globalLimiter);
+//app.use(globalLimiter);
 app.set('trust proxy', 1);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
