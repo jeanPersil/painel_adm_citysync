@@ -9,11 +9,9 @@ import {
 
 import { api } from "./api.js";
 
-
-
 // ===== CONSTANTES E CONFIGURAÇÕES =====
 const CONFIG = {
-  ATUALIZACAO_TEMPO_REAL: 15000, // 15 segundos
+  ATUALIZACAO_TEMPO_REAL: 30000, 
   ANIMACAO_ENTRADA: 300,
   NOTIFICACAO_TIMEOUT: 5000,
   LOCAL_STORAGE_KEYS: {
@@ -21,9 +19,6 @@ const CONFIG = {
     MENU_ABERTO: "menuAberto",
   },
 };
-
-let paginaAtual = 1;
-const limitePorPagina = 10;
 
 // ===== ELEMENTOS DO DOM =====
 const btnSair = document.getElementById("btnSair");
@@ -38,7 +33,11 @@ let elementos = {
   actionButtons: null,
   statusBadges: null,
   overlay: null,
-  cardsStatus: null, // Adicionado
+  cardsStatus: null,
+  cardTotalReports: null,
+  cardPendentes: null,
+  cardEmAndamento: null,
+  cardResolvidos: null,
 };
 
 // ===== ESTADO DA APLICAÇÃO =====
@@ -47,6 +46,13 @@ let estado = {
   modoEscuroAtivo: false,
   dadosFiltrados: false,
   tempoRealAtivo: true,
+  ultimaAtualizacao: null,
+  estatisticas: {
+    total: 0,
+    pendentes: 0,
+    emAndamento: 0,
+    resolvidos: 0,
+  },
 };
 
 // ===== INICIALIZAÇÃO =====
@@ -56,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
   carregarPreferencias();
   inicializarAplicacao();
   carregarPerfilUsuario();
-  mostrarProblemasRecentes();
+  carregarDadosDashboard(); 
 });
 
 function inicializarElementos() {
@@ -67,9 +73,13 @@ function inicializarElementos() {
     searchInput: document.querySelector(".search-box input"),
     chartFilter: document.querySelector(".chart-filter"),
     viewAllBtn: document.querySelector(".view-all"),
-    actionButtons: document.querySelectorAll(".action-buttons .action-btn"), // Seleção mais específica
+    actionButtons: document.querySelectorAll(".action-buttons .action-btn"),
     statusBadges: document.querySelectorAll(".status-badge"),
     cardsStatus: document.querySelectorAll(".status-card"),
+    cardTotalReports: document.querySelector(".status-card:nth-child(1) .card-value"),
+    cardPendentes: document.querySelector(".status-card:nth-child(2) .card-value"),
+    cardEmAndamento: document.querySelector(".status-card:nth-child(3) .card-value"),
+    cardResolvidos: document.querySelector(".status-card:nth-child(4) .card-value"),
   };
 }
 
@@ -78,7 +88,6 @@ function criarOverlay() {
   elementos.overlay.className = "overlay";
   document.body.appendChild(elementos.overlay);
 
-  // Fechar menu ao clicar no overlay
   elementos.overlay.addEventListener("click", function () {
     if (estado.menuAberto && window.innerWidth < 992) {
       estado.menuAberto = toggleMenuLateral(
@@ -92,7 +101,6 @@ function criarOverlay() {
 }
 
 function carregarPreferencias() {
-  // Carregar preferência do modo escuro
   const darkModeSalvo = localStorage.getItem(
     CONFIG.LOCAL_STORAGE_KEYS.MODO_ESCURO
   );
@@ -103,7 +111,6 @@ function carregarPreferencias() {
     if (elementos.darkModeToggle) elementos.darkModeToggle.checked = true;
   }
 
-  // Carregar preferência do menu lateral
   const menuAbertoSalvo = localStorage.getItem(
     CONFIG.LOCAL_STORAGE_KEYS.MENU_ABERTO
   );
@@ -117,24 +124,71 @@ function carregarPreferencias() {
       elementos.menuToggle.innerHTML = '<i class="fas fa-times"></i>';
     }
   } else if (window.innerWidth >= 992) {
-    estado.menuAberto = true; // Menu sempre aberto em telas grandes
+    estado.menuAberto = true;
   }
 
   verificarTamanhoTela();
 }
 
 function inicializarAplicacao() {
-  // A inicialização dos gráficos agora é feita em charts.js
-  // inicializarGraficos(); // Removido
   inicializarTooltips();
   configurarEventListeners();
   animarElementos();
   iniciarAtualizacaoTempoReal();
   configurarObservadorIntersecao();
-  configurarServiceWorker();
 }
 
-// ===== VERIFICAR TAMANHO DA TELA E AJUSTAR MENU =====
+
+async function carregarDadosDashboard() {
+  try {
+    
+    const resultado = await api.obterReportsPorPeriodo(7);
+    
+    if (resultado.success === false) {
+      throw new Error(resultado.message);
+    }
+
+    // Atualizar estatísticas
+    estado.estatisticas = {
+      total: resultado.problemasResolvidos.length + 
+             resultado.problemasEmAndamento.length + 
+             resultado.problemasPendentes.length,
+      pendentes: resultado.problemasPendentes.length,
+      emAndamento: resultado.problemasEmAndamento.length,
+      resolvidos: resultado.problemasResolvidos.length,
+    };
+
+    
+    atualizarCardsEstatisticas();
+    
+    // Atualizar tabela
+    await mostrarProblemasRecentes();
+    
+    estado.ultimaAtualizacao = new Date();
+    
+  } catch (error) {
+    console.error("Erro ao carregar dados do dashboard:", error);
+    mostrarNotificacao("Erro ao carregar dados do dashboard", "erro");
+  }
+}
+
+
+function atualizarCardsEstatisticas() {
+  if (elementos.cardTotalReports) {
+    animarContagem(elementos.cardTotalReports, 0, estado.estatisticas.total);
+  }
+  if (elementos.cardPendentes) {
+    animarContagem(elementos.cardPendentes, 0, estado.estatisticas.pendentes);
+  }
+  if (elementos.cardEmAndamento) {
+    animarContagem(elementos.cardEmAndamento, 0, estado.estatisticas.emAndamento);
+  }
+  if (elementos.cardResolvidos) {
+    animarContagem(elementos.cardResolvidos, 0, estado.estatisticas.resolvidos);
+  }
+}
+
+
 function verificarTamanhoTela() {
   if (window.innerWidth >= 992) {
     elementos.barraLateral.style.transform = "translateX(0)";
@@ -197,7 +251,6 @@ function esconderTooltip() {
 
 // ===== CONFIGURAR EVENT LISTENERS =====
 function configurarEventListeners() {
-  // Menu toggle
   if (elementos.menuToggle) {
     elementos.menuToggle.addEventListener("click", () => {
       estado.menuAberto = toggleMenuLateral(
@@ -207,146 +260,87 @@ function configurarEventListeners() {
         estado.menuAberto
       );
     });
-    elementos.menuToggle.addEventListener("keypress", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        estado.menuAberto = toggleMenuLateral(
-          elementos.barraLateral,
-          elementos.menuToggle,
-          elementos.overlay,
-          estado.menuAberto
-        );
-      }
-    });
   }
 
-  // Dark mode toggle
   if (elementos.darkModeToggle) {
     elementos.darkModeToggle.addEventListener("change", () => {
       estado.modoEscuroAtivo = toggleModoEscuro(estado.modoEscuroAtivo);
     });
   }
 
-  // Search input
+  
   if (elementos.searchInput) {
     elementos.searchInput.addEventListener(
       "input",
-      debounce(pesquisarConteudo, 300)
+      debounce(async (e) => {
+        const termo = e.target.value.trim();
+        if (termo.length >= 3) {
+          await pesquisarConteudoAPI(termo);
+        } else if (termo.length === 0) {
+          await mostrarProblemasRecentes();
+        }
+      }, 500)
     );
+    
     elementos.searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         elementos.searchInput.value = "";
-        pesquisarConteudo({ target: elementos.searchInput });
+        mostrarProblemasRecentes();
       }
     });
   }
 
-  // Chart filter
-  if (elementos.chartFilter) {
-    elementos.chartFilter.addEventListener("change", filtrarGrafico);
-  }
-
-  // Action buttons
   elementos.actionButtons.forEach((botao) => {
     botao.addEventListener("click", handleActionClick);
-    botao.addEventListener("keypress", (e) => {
-      if (e.key === "Enter" || e.key === " ") handleActionClick.call(botao, e);
-    });
   });
 
-  // Status badges (se houver necessidade de filtrar por eles)
-  // elementos.statusBadges.forEach(badge => {
-  //     badge.addEventListener('click', () => filtrarPorStatus(badge.textContent));
-  //     badge.addEventListener('keypress', (e) => {
-  //         if (e.key === 'Enter' || e.key === ' ') filtrarPorStatus(badge.textContent);
-  //     });
-  // });
-
-  // Eventos de teclado
   document.addEventListener("keydown", handleKeyboardShortcuts);
-
-  // Redimensionamento da janela
   window.addEventListener("resize", debounce(verificarTamanhoTela, 250));
 }
 
-// ===== PESQUISAR CONTEÚDO =====
-function pesquisarConteudo(e) {
-  const termo = e.target.value.toLowerCase().trim();
 
-  const linhasTabela = document.querySelectorAll(".tabela-recentes tbody tr");
-  let resultados = 0;
-
-  linhasTabela.forEach((linha) => {
-    const textoLinha = linha.textContent.toLowerCase();
-    if (textoLinha.includes(termo)) {
-      linha.style.display = "";
-      linha.classList.add("highlight");
-      resultados++;
-    } else {
-      linha.style.display = "none";
-      linha.classList.remove("highlight");
+async function pesquisarConteudoAPI(termo) {
+  try {
+    const resultado = await api.obterReportsFiltrados({ pesquisar: termo });
+    
+    if (!resultado.success) {
+      throw new Error(resultado.message);
     }
-  });
 
-  mostrarResultadoPesquisa(resultados);
-  estado.dadosFiltrados = termo.length > 0;
-}
+    const tabela = document.querySelector("#reportsRecentes");
+    tabela.innerHTML = "";
 
-function mostrarResultadoPesquisa(resultados) {
-  let mensagem = document.getElementById("resultado-pesquisa");
+    if (resultado.reports.length === 0) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td colspan="5" style="text-align:center;">Nenhum resultado encontrado para "${termo}"</td>`;
+      tabela.appendChild(tr);
+      return;
+    }
 
-  if (!mensagem) {
-    mensagem = document.createElement("div");
-    mensagem.id = "resultado-pesquisa";
-    mensagem.style.cssText = `
-            padding: 10px;
-            margin: 10px 0;
-            background: var(--info-light);
-            border-left: 4px solid var(--accent-blue);
-            border-radius: 4px;
-            color: var(--text-primary);
-        `;
-    document.querySelector(".tabela-recentes").appendChild(mensagem);
-  }
+    resultado.reports.slice(0, 10).forEach((item) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>#${item.id}</td>
+        <td>${item.nome_categoria}</td>
+        <td>${item.endereco}</td>
+        <td><span class="status-badge ${item.nome_status?.toLowerCase().replace(" ", "-")}">${item.nome_status}</span></td>
+        <td>${new Date(item.data_criacao).toLocaleDateString("pt-BR")}</td>
+      `;
+      tabela.appendChild(tr);
+    });
 
-  mensagem.textContent = `${resultados} resultado(s) encontrado(s)`;
-  if (resultados === 0) {
-    mensagem.style.backgroundColor = "var(--danger-light)";
-    mensagem.style.borderColor = "var(--accent-red)";
-  } else {
-    mensagem.style.backgroundColor = "var(--info-light)";
-    mensagem.style.borderColor = "var(--accent-blue)";
+    mostrarNotificacao(`${resultado.reports.length} resultado(s) encontrado(s)`, "info");
+    
+  } catch (error) {
+    console.error("Erro na pesquisa:", error);
+    mostrarNotificacao("Erro ao pesquisar", "erro");
   }
 }
 
-function esconderResultadoPesquisa() {
-  const mensagem = document.getElementById("resultado-pesquisa");
-  if (mensagem) mensagem.remove();
-}
 
-// ===== FILTRAR GRÁFICO =====
-function filtrarGrafico(e) {
-  const periodo = e.target.value;
-
-  const chartContainer = document.querySelector(".main-chart");
-  chartContainer.classList.add("loading");
-
-  // Chamar a função de atualização do charts.js
-  if (
-    window.GraficosDashboard &&
-    window.GraficosDashboard.atualizarCategorias
-  ) {
-    window.GraficosDashboard.atualizarCategorias(periodo);
-  }
-
-  // O remover da classe 'loading' é feito dentro de charts.js agora
-}
-
-// ===== VER TODOS REPORTS =====
-
-// ===== HANDLE ACTION CLICK =====
 function handleActionClick(e) {
   const acaoSpan = this.querySelector("span");
-  if (!acaoSpan) return; // Garante que o span existe
+  if (!acaoSpan) return;
   const acao = acaoSpan.textContent;
 
   switch (acao) {
@@ -364,9 +358,50 @@ function handleActionClick(e) {
   }
 }
 
-function exportarDados() {
-  mostrarNotificacao("Dados exportados com sucesso!", "sucesso");
-  document.dispatchEvent(new CustomEvent("exportacaoIniciada"));
+
+async function exportarDados() {
+  try {
+    mostrarNotificacao("Preparando exportação...", "info");
+    
+    const resultado = await api.obterReportsPorPeriodo(30);
+    
+    if (resultado.success === false) {
+      throw new Error(resultado.message);
+    }
+
+   
+    const todosReports = [
+      ...resultado.problemasResolvidos,
+      ...resultado.problemasEmAndamento,
+      ...resultado.problemasPendentes,
+    ];
+
+    
+    const csv = [
+      ["ID", "Categoria", "Endereço", "Status", "Data", "Descrição"],
+      ...todosReports.map(r => [
+        r.id,
+        r.nome_categoria,
+        r.endereco,
+        r.nome_status,
+        new Date(r.data_criacao).toLocaleDateString("pt-BR"),
+        r.descricao
+      ])
+    ].map(row => row.join(";")).join("\n");
+
+    // Download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `reports_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+
+    mostrarNotificacao("Dados exportados com sucesso!", "sucesso");
+    
+  } catch (error) {
+    console.error("Erro ao exportar:", error);
+    mostrarNotificacao("Erro ao exportar dados", "erro");
+  }
 }
 
 function toggleFiltros() {
@@ -377,46 +412,46 @@ function toggleFiltros() {
     filtrosAvancados = document.createElement("div");
     filtrosAvancados.className = "filtros-avancados";
     filtrosAvancados.innerHTML = `
-            <h4>Filtros Avançados</h4>
-            <div class="filtro-grupo">
-                <label for="filtroDataInicial">Data Inicial</label>
-                <input type="date" id="filtroDataInicial">
-            </div>
-            <div class="filtro-grupo">
-                <label for="filtroDataFinal">Data Final</label>
-                <input type="date" id="filtroDataFinal">
-            </div>
-            <div class="filtro-grupo">
-                <label for="filtroCategoria">Categoria</label>
-                <select id="filtroCategoria">
-                    <option value="todas">Todas</option>
-                    <option value="Buraco">Buraco</option>
-                    <option value="Iluminação">Iluminação</option>
-                    <option value="Limpeza">Limpeza</option>
-                    <option value="Sinalização">Sinalização</option>
-                </select>
-            </div>
-            <button class="action-btn aplicar-filtros"><i class="fas fa-filter"></i> Aplicar Filtros</button>
-            <button class="botao-acao limpar-filtros"><i class="fas fa-times"></i> Limpar Filtros</button>
-        `;
+      <h4>Filtros Avançados</h4>
+      <div class="filtro-grupo">
+        <label for="filtroDataInicial">Data Inicial</label>
+        <input type="date" id="filtroDataInicial">
+      </div>
+      <div class="filtro-grupo">
+        <label for="filtroDataFinal">Data Final</label>
+        <input type="date" id="filtroDataFinal">
+      </div>
+      <div class="filtro-grupo">
+        <label for="filtroCategoria">Categoria</label>
+        <select id="filtroCategoria">
+          <option value="">Todas</option>
+          <option value="Buraco">Buraco</option>
+          <option value="Iluminação">Iluminação</option>
+          <option value="Lixo">Lixo</option>
+          <option value="Semáforo">Semáforo</option>
+          <option value="Vazamento/esgoto">Vazamento/esgoto</option>
+          <option value="Transporte">Transporte</option>
+          <option value="Outros">Outros</option>
+        </select>
+      </div>
+      <button class="action-btn aplicar-filtros"><i class="fas fa-filter"></i> Aplicar Filtros</button>
+      <button class="botao-acao limpar-filtros"><i class="fas fa-times"></i> Limpar Filtros</button>
+    `;
     quickActionsDiv.appendChild(filtrosAvancados);
 
-    // Adicionar listeners para os novos botões
     filtrosAvancados
       .querySelector(".aplicar-filtros")
-      .addEventListener("click", () => {
-        mostrarNotificacao("Filtros avançados aplicados!", "info");
-        // Implementar lógica de filtragem real aqui
-      });
+      .addEventListener("click", aplicarFiltrosAvancados);
+    
     filtrosAvancados
       .querySelector(".limpar-filtros")
       .addEventListener("click", () => {
         filtrosAvancados.querySelectorAll("input, select").forEach((input) => {
           if (input.type === "date") input.value = "";
-          else if (input.tagName === "SELECT") input.value = "todas";
+          else if (input.tagName === "SELECT") input.value = "";
         });
-        mostrarNotificacao("Filtros avançados limpos!", "info");
-        // Implementar lógica para remover filtros
+        mostrarProblemasRecentes();
+        mostrarNotificacao("Filtros limpos!", "info");
       });
 
     setTimeout(() => filtrosAvancados.classList.add("ativo"), 10);
@@ -425,10 +460,52 @@ function toggleFiltros() {
   }
 }
 
+
+async function aplicarFiltrosAvancados() {
+  try {
+    const dataInicial = document.getElementById("filtroDataInicial").value;
+    const dataFinal = document.getElementById("filtroDataFinal").value;
+    const categoria = document.getElementById("filtroCategoria").value;
+
+    const params = {};
+    if (dataInicial) params.dataInicial = dataInicial;
+    if (dataFinal) params.dataFinal = dataFinal;
+    if (categoria) params.categoria = categoria;
+
+    const resultado = await api.obterReportsFiltrados(params);
+    
+    if (!resultado.success) {
+      throw new Error(resultado.message);
+    }
+
+    const tabela = document.querySelector("#reportsRecentes");
+    tabela.innerHTML = "";
+
+    resultado.reports.slice(0, 10).forEach((item) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>#${item.id}</td>
+        <td>${item.nome_categoria}</td>
+        <td>${item.endereco}</td>
+        <td><span class="status-badge ${item.nome_status?.toLowerCase().replace(" ", "-")}">${item.nome_status}</span></td>
+        <td>${new Date(item.data_criacao).toLocaleDateString("pt-BR")}</td>
+      `;
+      tabela.appendChild(tr);
+    });
+
+    mostrarNotificacao("Filtros aplicados!", "sucesso");
+    
+  } catch (error) {
+    console.error("Erro ao aplicar filtros:", error);
+    mostrarNotificacao("Erro ao aplicar filtros", "erro");
+  }
+}
+
 function gerarRelatorio() {
   mostrarNotificacao("Relatório sendo gerado...", "info");
   setTimeout(() => {
     mostrarNotificacao("Relatório gerado com sucesso!", "sucesso");
+    
   }, 2000);
 }
 
@@ -468,47 +545,16 @@ function animarAtividades() {
   });
 }
 
-// ===== ATUALIZAÇÃO EM TEMPO REAL =====
+
 function iniciarAtualizacaoTempoReal() {
   if (!estado.tempoRealAtivo) return;
 
-  setInterval(() => {
+  setInterval(async () => {
     if (document.visibilityState === "visible") {
-      atualizarDadosTempoReal();
+      await carregarDadosDashboard();
+      console.log("Dashboard atualizado em tempo real");
     }
   }, CONFIG.ATUALIZACAO_TEMPO_REAL);
-}
-
-function atualizarDadosTempoReal() {
-  elementos.cardsStatus.forEach((card) => {
-    const valorElemento = card.querySelector(".card-value");
-    let valorAtual = parseInt(valorElemento.textContent);
-    const variacao = Math.floor(Math.random() * 5) - 2;
-    const novoValor = Math.max(0, valorAtual + variacao);
-
-    animarContagem(valorElemento, valorAtual, novoValor);
-
-    const tendencia = card.querySelector(".card-trend");
-    if (tendencia) {
-      // Verifica se o elemento tendência existe
-      if (variacao > 0) {
-        tendencia.className = "card-trend up";
-        tendencia.innerHTML = `<i class="fas fa-arrow-up"></i> ${Math.abs(
-          variacao
-        )}%`;
-      } else if (variacao < 0) {
-        tendencia.className = "card-trend down";
-        tendencia.innerHTML = `<i class="fas fa-arrow-down"></i> ${Math.abs(
-          variacao
-        )}%`;
-      } else {
-        tendencia.className = "card-trend"; // Sem mudança
-        tendencia.innerHTML = "";
-      }
-    }
-  });
-
-  document.dispatchEvent(new CustomEvent("dadosAtualizados"));
 }
 
 function animarContagem(elemento, valorInicial, valorFinal) {
@@ -533,7 +579,7 @@ function animarContagem(elemento, valorInicial, valorFinal) {
   }, intervalo);
 }
 
-// ===== OBSERVADOR DE INTERSEÇÃO (LAZY LOADING) =====
+
 function configurarObservadorIntersecao() {
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
@@ -556,85 +602,66 @@ function configurarObservadorIntersecao() {
   }
 }
 
-// ===== SERVICE WORKER (CACHE E OFFLINE) =====
-function configurarServiceWorker() {
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
-  }
-}
-
-// ===== UTILITÁRIOS =====
-function formatarNumero(numero) {
-  if (numero >= 1000000) {
-    return (numero / 1000000).toFixed(1) + "M";
-  } else if (numero >= 1000) {
-    return (numero / 1000).toFixed(1) + "K";
-  }
-  return numero;
-}
-
 function handleKeyboardShortcuts(e) {
-  // Ctrl/Cmd + K para focar na pesquisa
   if ((e.ctrlKey || e.metaKey) && e.key === "k") {
     e.preventDefault();
     elementos.searchInput.focus();
   }
 
-  // Esc para limpar pesquisa
   if (e.key === "Escape" && document.activeElement === elementos.searchInput) {
     elementos.searchInput.value = "";
-    pesquisarConteudo({ target: elementos.searchInput });
+    mostrarProblemasRecentes();
     elementos.searchInput.blur();
   }
 }
 
-// ===== EXPORTAÇÃO PARA USO EXTERNO =====
-window.Dashboard = {
-  toggleMenu: () => {
-    // Wrapper para a função centralizada
-    elementos.menuToggle.click(); // Simula o clique no botão
-  },
-  toggleDarkMode: () => {
-    // Wrapper para a função centralizada
-    elementos.darkModeToggle.click(); // Simula o clique no switch
-  },
-  exportarDados: exportarDados,
-  atualizarGrafico: filtrarGrafico, // Renomeado para refletir a ação
-  mostrarNotificacao: mostrarNotificacao,
-};
 
 async function mostrarProblemasRecentes() {
   const tabela = document.getElementById("reportsRecentes");
+  tabela.innerHTML = "";
 
-  const reports = await api.obterReportsPorPeriodo(7);
+  try {
+    const resultado = await api.obterReportsPorPeriodo(7);
 
-  let todasCategorias = [
-    ...reports.problemasResolvidos,
-    ...reports.problemasEmAndamento,
-    ...reports.problemasPendentes,
-  ];
+    let todasCategorias = [
+      ...resultado.problemasResolvidos,
+      ...resultado.problemasEmAndamento,
+      ...resultado.problemasPendentes,
+    ];
 
-  todasCategorias = todasCategorias.slice(0, 10);
+    todasCategorias = todasCategorias.slice(0, 10);
 
-  todasCategorias.forEach((item) => {
+    todasCategorias.forEach((item) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>#${item.id}</td>
+        <td>${item.nome_categoria}</td>
+        <td>${item.endereco}</td>
+        <td><span class="status-badge ${item.nome_status?.toLowerCase().replace(" ", "-")}">${item.nome_status}</span></td>
+        <td>${new Date(item.data_criacao).toLocaleDateString("pt-BR")}</td>
+      `;
+      tabela.appendChild(tr);
+    });
+  } catch (error) {
+    console.error("Erro ao carregar problemas recentes:", error);
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>#${item.id}</td>
-      <td>${item.nome_categoria}</td>
-      <td>${item.endereco}</td>
-      <td><span class="status-badge">${item.nome_status}</span></td>
-      <td>${new Date(item.data_criacao).toLocaleDateString("pt-BR")}</td>
-    `;
+    tr.innerHTML = `<td colspan="5" style="text-align:center;">Erro ao carregar dados</td>`;
     tabela.appendChild(tr);
-  });
+  }
 }
+
+// ===== EXPORTAÇÃO =====
+window.Dashboard = {
+  toggleMenu: () => {
+    elementos.menuToggle.click();
+  },
+  toggleDarkMode: () => {
+    elementos.darkModeToggle.click();
+  },
+  exportarDados: exportarDados,
+  atualizarDados: carregarDadosDashboard,
+  mostrarNotificacao: mostrarNotificacao,
+};
 
 btnSair.addEventListener("click", async (e) => {
   e.preventDefault();

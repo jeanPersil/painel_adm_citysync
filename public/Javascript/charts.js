@@ -1,5 +1,4 @@
-import { toggleModoEscuro, debounce } from "./utils.js"; // Importa funções utilitárias
-
+import { toggleModoEscuro, debounce } from "./utils.js";
 import { api } from "./api.js";
 
 let reports = [];
@@ -24,21 +23,30 @@ const CHART_COLORS = {
 // Variáveis globais para os gráficos
 let categoriaChart, statusChart;
 
+function getTextColor() {
+  return document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#34495e';
+}
+
+function getGridColor() {
+  return document.body.classList.contains('dark-mode') 
+    ? 'rgba(255, 255, 255, 0.1)' 
+    : 'rgba(0, 0, 0, 0.1)';
+}
+
 // Inicialização dos gráficos
 document.addEventListener("DOMContentLoaded", async function () {
-  // Pequeno atraso para garantir que o DOM esteja totalmente renderizado e o CSS aplicado
   reports = await api.obterReportsPorPeriodo(7);
   setTimeout(initCharts, 100);
 });
 
-// Inicializar os gráficos
+
 function initCharts() {
   criarGraficoCategorias();
   criarGraficoStatus();
   configurarEventListenersGraficos();
 }
 
-// Configurar event listeners para os gráficos
+
 function configurarEventListenersGraficos() {
   const periodoSelect = document.getElementById("periodo-select");
   if (periodoSelect) {
@@ -50,9 +58,8 @@ function configurarEventListenersGraficos() {
     });
   }
 
-  // Listener para mudança de modo escuro (agora usando o evento customizado)
+ 
   document.addEventListener("modoEscuroAlterado", function (e) {
-    // Destrói e recria os gráficos para aplicar o novo tema corretamente
     setTimeout(function () {
       if (categoriaChart) {
         categoriaChart.destroy();
@@ -65,14 +72,15 @@ function configurarEventListenersGraficos() {
   });
 }
 
-// Criar gráfico de barras para categorias
-function criarGraficoCategorias() {
-  const ctx = document.getElementById("categoriaChart").getContext("2d");
 
-  // Dados iniciais (últimos 7 dias)
+function criarGraficoCategorias() {
+  const ctx = document.getElementById("categoriaChart");
+  if (!ctx) return;
+  
+  const context = ctx.getContext("2d");
   const dados = obterDadosCategorias(7);
 
-  categoriaChart = new Chart(ctx, {
+  categoriaChart = new Chart(context, {
     type: "bar",
     data: {
       labels: dados.labels,
@@ -118,7 +126,11 @@ function criarGraficoCategorias() {
         tooltip: {
           mode: "index",
           intersect: false,
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          backgroundColor: document.body.classList.contains('dark-mode') 
+            ? 'rgba(30, 30, 30, 0.9)' 
+            : 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
           titleFont: {
             size: 14,
             weight: "bold",
@@ -139,13 +151,13 @@ function criarGraficoCategorias() {
         y: {
           beginAtZero: true,
           grid: {
-            color: "rgba(0, 0, 0, 0.1)", // Cor padrão para modo claro
+            color: getGridColor(),
           },
           ticks: {
             font: {
               size: 12,
             },
-            color: "var(--text-primary)", // Usa variável CSS para cor do texto
+            color: getTextColor(), 
           },
         },
         x: {
@@ -156,7 +168,7 @@ function criarGraficoCategorias() {
             font: {
               size: 12,
             },
-            color: "var(--text-primary)", // Usa variável CSS para cor do texto
+            color: getTextColor(), 
           },
         },
       },
@@ -166,24 +178,24 @@ function criarGraficoCategorias() {
       },
     },
   });
-
-  // Aplica o tema escuro se já estiver ativo
-  aplicarTemaEscuroGrafico(categoriaChart);
 }
 
 function criarGraficoStatus() {
-  const ctx = document.getElementById("statusChart").getContext("2d");
+  const ctx = document.getElementById("statusChart");
+  if (!ctx) return;
+  
+  const context = ctx.getContext("2d");
 
-  statusChart = new Chart(ctx, {
+  statusChart = new Chart(context, {
     type: "doughnut",
     data: {
       labels: ["Resolvidos", "Em Andamento", "Abertos"],
       datasets: [
         {
           data: [
-            reports.problemasResolvidos.length || 0,
-            reports.problemasEmAndamento.length || 0,
-            reports.problemasPendentes.length || 0,
+            reports.problemasResolvidos?.length || 0,
+            reports.problemasEmAndamento?.length || 0,
+            reports.problemasPendentes?.length || 0,
           ],
           backgroundColor: [
             CHART_COLORS.greenLight,
@@ -209,7 +221,11 @@ function criarGraficoStatus() {
           display: false,
         },
         tooltip: {
-          backgroundColor: "rgba(0, 0, 0, 0.7)",
+          backgroundColor: document.body.classList.contains('dark-mode') 
+            ? 'rgba(30, 30, 30, 0.9)' 
+            : 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#fff',
+          bodyColor: '#fff',
           titleFont: {
             size: 14,
             weight: "bold",
@@ -222,7 +238,7 @@ function criarGraficoStatus() {
           callbacks: {
             label: function (context) {
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = Math.round((context.raw / total) * 100);
+              const percentage = total > 0 ? Math.round((context.raw / total) * 100) : 0;
               return `${context.label}: ${context.raw} (${percentage}%)`;
             },
           },
@@ -238,9 +254,6 @@ function criarGraficoStatus() {
   });
 
   criarLegendaPersonalizada();
-
-  // Aplica o tema escuro se já estiver ativo
-  aplicarTemaEscuroGrafico(statusChart);
 }
 
 function criarLegendaPersonalizada() {
@@ -250,9 +263,9 @@ function criarLegendaPersonalizada() {
   const labels = ["Resolvidos", "Em Andamento", "Abertos"];
   const colors = [CHART_COLORS.green, CHART_COLORS.orange, CHART_COLORS.blue];
   const values = [
-    reports.problemasResolvidos.length || 0,
-    reports.problemasEmAndamento.length || 0,
-    reports.problemasPendentes.length || 0,
+    reports.problemasResolvidos?.length || 0,
+    reports.problemasEmAndamento?.length || 0,
+    reports.problemasPendentes?.length || 0,
   ];
 
   const total = values.reduce((a, b) => a + b, 0);
@@ -260,14 +273,13 @@ function criarLegendaPersonalizada() {
   let legendHTML = '<div class="custom-legend">';
 
   labels.forEach((label, index) => {
-    const percentage =
-      total > 0 ? Math.round((values[index] / total) * 100) : 0;
+    const percentage = total > 0 ? Math.round((values[index] / total) * 100) : 0;
     legendHTML += `
-            <div class="legend-item">
-                <span class="legend-color" style="background-color: ${colors[index]}"></span>
-                <span>${label}: ${values[index]} (${percentage}%)</span>
-            </div>
-        `;
+      <div class="legend-item">
+        <span class="legend-color" style="background-color: ${colors[index]}"></span>
+        <span>${label}: ${values[index]} (${percentage}%)</span>
+      </div>
+    `;
   });
 
   legendHTML += "</div>";
@@ -277,9 +289,9 @@ function criarLegendaPersonalizada() {
 // Obter dados para o gráfico de categorias baseado no período
 function obterDadosCategorias(dias) {
   const todasCategorias = [
-    ...reports.problemasResolvidos,
-    ...reports.problemasEmAndamento,
-    ...reports.problemasPendentes,
+    ...(reports.problemasResolvidos || []),
+    ...(reports.problemasEmAndamento || []),
+    ...(reports.problemasPendentes || []),
   ];
 
   const contagem = {};
@@ -294,68 +306,38 @@ function obterDadosCategorias(dias) {
   return { labels, valores };
 }
 
-// Atualizar gráfico de categorias com base no período selecionado
+
 function atualizarGraficoCategorias(dias) {
   const chartContainer = document.querySelector(".main-chart");
-  chartContainer.classList.add("loading");
+  if (chartContainer) {
+    chartContainer.classList.add("loading");
+  }
 
-  // Simular delay de carregamento
   setTimeout(() => {
     const novosDados = obterDadosCategorias(dias);
 
-    categoriaChart.data.labels = novosDados.labels;
-    categoriaChart.data.datasets[0].data = novosDados.valores;
-    categoriaChart.update();
+    if (categoriaChart) {
+      categoriaChart.data.labels = novosDados.labels;
+      categoriaChart.data.datasets[0].data = novosDados.valores;
+      
+      
+      categoriaChart.options.scales.x.ticks.color = getTextColor();
+      categoriaChart.options.scales.y.ticks.color = getTextColor();
+      categoriaChart.options.scales.y.grid.color = getGridColor();
+      
+      categoriaChart.update();
+    }
 
-    chartContainer.classList.remove("loading");
+    if (chartContainer) {
+      chartContainer.classList.remove("loading");
+    }
 
-    // Disparar evento personalizado
     document.dispatchEvent(
       new CustomEvent("graficoAtualizado", {
         detail: { tipo: "categorias", periodo: dias },
       })
     );
   }, 800);
-}
-
-// Aplicar tema escuro aos gráficos se necessário
-function aplicarTemaEscuroGrafico(chart) {
-  if (document.body.classList.contains("dark-mode")) {
-    // Atualiza as cores do tooltip para o modo escuro
-    chart.options.plugins.tooltip.backgroundColor = "rgba(255, 255, 255, 0.9)";
-    chart.options.plugins.tooltip.titleColor = "#000"; // Use titleColor para Chart.js 3+
-    chart.options.plugins.tooltip.bodyColor = "#000"; // Use bodyColor para Chart.js 3+
-
-    if (chart.options.scales) {
-      // Atualiza as cores dos eixos para o modo escuro
-      if (chart.options.scales.x) {
-        chart.options.scales.x.ticks.color = "var(--text-primary)"; // Cor do texto do eixo X
-        chart.options.scales.x.grid.color = "rgba(255, 255, 255, 0.1)"; // Cor da grade do eixo X
-      }
-      if (chart.options.scales.y) {
-        chart.options.scales.y.ticks.color = "var(--text-primary)"; // Cor do texto do eixo Y
-        chart.options.scales.y.grid.color = "rgba(255, 255, 255, 0.1)"; // Cor da grade do eixo Y
-      }
-    }
-    chart.update();
-  } else {
-    // Restaura as cores para o modo claro
-    chart.options.plugins.tooltip.backgroundColor = "rgba(0, 0, 0, 0.7)";
-    chart.options.plugins.tooltip.titleColor = undefined; // Restaura para o padrão
-    chart.options.plugins.tooltip.bodyColor = undefined; // Restaura para o padrão
-
-    if (chart.options.scales) {
-      if (chart.options.scales.x) {
-        chart.options.scales.x.ticks.color = "var(--text-primary)";
-        chart.options.scales.x.grid.color = "rgba(0, 0, 0, 0.1)";
-      }
-      if (chart.options.scales.y) {
-        chart.options.scales.y.ticks.color = "var(--text-primary)";
-        chart.options.scales.y.grid.color = "rgba(0, 0, 0, 0.1)";
-      }
-    }
-    chart.update();
-  }
 }
 
 // Exportar funções para uso global
