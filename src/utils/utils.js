@@ -17,6 +17,7 @@ function mapearStatus(status) {
     pendente: 1,
     "em andamento": 2,
     resolvido: 3,
+    "inválido": 4,
   };
 
   return mapeamento[status.toLowerCase()] || status;

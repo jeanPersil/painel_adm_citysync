@@ -2084,3 +2084,52 @@ input[type=\"checkbox\"]:hover {
   }
 }
 
+
+.status-inválido {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.15), rgba(156, 163, 175, 0.05));
+  color: #6b7280;
+  border: 2px solid rgba(156, 163, 175, 0.3);
+}
+
+.status-inválido::before {
+  display: none;
+}
+
+body.dark-mode .status-inválido {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(156, 163, 175, 0.08));
+  color: #9ca3af;
+  border-color: rgba(156, 163, 175, 0.35);
+}
+
+.modal-body .form-input:disabled,
+.modal-body .form-select:disabled {
+  background-color: #f3f4f6 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  color: #6b7280 !important;
+  border-color: #d1d5db;
+}
+
+body.dark-mode .modal-body .form-input:disabled,
+body.dark-mode .modal-body .form-select:disabled {
+  background-color: #1f2937 !important;
+  color: #9ca3af !important;
+  border-color: #374151;
+}
+
+.field-help {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.field-help i {
+  font-size: 0.75rem;
+}
+
+body.dark-mode .field-help {
+  color: #9ca3af;
+}
