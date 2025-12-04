@@ -30,12 +30,12 @@ let elementos = {
   tabContents: null,
   formEdicao: null,
   avatar: null,
-  notificationBell: null,
   profileNameDisplay: null,
   profileCardName: null,
   profileCardRole: null,
   inputName: null,
   inputEmail: null,
+  inputPassword: null,
 };
 
 // ===== ESTADO DA APLICAÇÃO =====

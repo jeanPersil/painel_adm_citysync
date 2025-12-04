@@ -63,10 +63,6 @@
             <h1>Configurações</h1>
           </div>
           <div class="header-right">
-            <div class="notification-bell">
-              <i class="fas fa-bell"></i>
-              <span class="notification-count">1</span>
-            </div>
             <div class="perfil-usuario">
               <div class="avatar-container">
                 <i class="fas fa-user-circle profile-avatar"></i>
@@ -81,14 +77,23 @@
           <!-- Preferências -->
           <div class="cartao-configuracao">
             <h3>Preferências do Sistema</h3>
+            <p class="subtitulo-cartao">
+              Personalize sua experiência de uso da plataforma.
+            </p>
             <div class="opcao-configuracao">
-              <label for="lang">Idioma:</label>
+              <label for="lang">
+                <i class="fas fa-language"></i>
+                Idioma:
+              </label>
               <select id="lang">
-                <option value="pt">Português</option>
+                <option value="pt">Português (BR)</option>
               </select>
             </div>
             <div class="opcao-configuracao">
-              <label for="notify">Notificações:</label>
+              <label for="notify">
+                <i class="fas fa-bell"></i>
+                Notificações:
+              </label>
               <label class="switch">
                 <input type="checkbox" id="notify" checked />
                 <span class="slider round"></span>
@@ -99,30 +104,12 @@
             </button>
           </div>
 
-          <!-- Segurança -->
-          <div class="cartao-configuracao">
-            <h3>Segurança da Conta</h3>
-            <p class="subtitulo-cartao">
-              Gerencie suas credenciais e configurações de segurança.
-            </p>
-            <div class="opcao-configuracao">
-              <label for="2fa">Autenticação de 2 Fatores:</label>
-              <label class="switch">
-                <input type="checkbox" id="2fa" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-            <button class="botao-acao">
-              <i class="fas fa-key"></i> Alterar Senha
-            </button>
-            <button class="botao-acao">
-              <i class="fas fa-mobile-alt"></i> Gerenciar Dispositivos
-            </button>
-          </div>
-
-          <!-- Acesso -->
+          <!-- Acesso e Permissões -->
           <div class="cartao-configuracao full-width">
             <h3>Acesso e Permissões</h3>
+            <p class="subtitulo-cartao">
+              Gerencie usuários e suas permissões no sistema.
+            </p>
             <div class="tabela-configuracoes">
               <table>
                 <thead>
