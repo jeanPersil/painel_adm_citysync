@@ -221,9 +221,9 @@
       </main>
     </div>
 
-    <!-- Modal para visualizar detalhes do report -->
-    <div class="modal" id="reportModal">
-      <div class="modal-content">
+    <!-- Modal para visualizar detalhes do report - MAIOR E CENTRALIZADO -->
+    <div class="modal modal-large" id="reportModal">
+      <div class="modal-content modal-content-large">
         <div class="modal-header">
           <h3>Detalhes do Report #<span id="modalReportId">001</span></h3>
           <button class="modal-close" id="modalClose">
@@ -231,7 +231,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="modal-grid">
+          <div class="modal-grid-large">
             <div class="modal-info">
               <h4>Informações do Report</h4>
               <div class="info-item">
@@ -292,13 +292,15 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary">Fechar</button>
-          <button class="btn btn-primary">Editar Report</button>
+          <button class="btn btn-secondary" id="closeViewModalBtn">Fechar</button>
+          <button class="btn btn-primary" id="editFromViewBtn">
+            <i class="fas fa-edit"></i> Editar Report
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Modal para editar - CORRIGIDO -->
+    <!-- Modal para editar - COM PRIORIDADE -->
     <div class="modal" id="editReportModal">
       <div class="modal-content">
         <div class="modal-header">
@@ -363,6 +365,17 @@
                   <option value="Em andamento">Em andamento</option>
                   <option value="Resolvido">Resolvido</option>
                   <option value="Inválido">Inválido</option>
+                </select>
+              </div>
+
+              <!-- Prioridade - EDITÁVEL (NOVO) -->
+              <div class="form-group">
+                <label for="editPrioridade">Prioridade</label>
+                <select id="editPrioridade" class="form-select" required>
+                  <option value="Baixa">Baixa</option>
+                  <option value="Média">Média</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Urgente">Urgente</option>
                 </select>
               </div>
 

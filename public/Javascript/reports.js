@@ -5,7 +5,6 @@
 import {
   carregarPerfilUsuario,
   mostrarNotificacao,
-  reconnectModalListeners,
   authUtils,
 } from "./utils.js";
 import { api } from "./api.js";
@@ -14,14 +13,16 @@ import { api } from "./api.js";
 let paginaAtual = 1;
 const limitePorPagina = 10;
 
+// Variável global para armazenar o report atual sendo visualizado
+let reportAtualVisualizado = null;
+
 // Objeto de elementos do DOM
 const elementos = {
   // Modais
   viewModal: document.getElementById("reportModal"),
   viewModalClose: document.getElementById("modalClose"),
-  viewModalBtnClose: document.querySelector(
-    "#reportModal .modal-footer .btn-secondary"
-  ),
+  closeViewModalBtn: document.getElementById("closeViewModalBtn"),
+  editFromViewBtn: document.getElementById("editFromViewBtn"),
   editModal: document.getElementById("editReportModal"),
   editModalClose: document.getElementById("editModalClose"),
 
@@ -33,6 +34,7 @@ const elementos = {
   editData: document.getElementById("editData"),
   editCategoria: document.getElementById("editCategoria"),
   editStatus: document.getElementById("editStatus"),
+  editPrioridade: document.getElementById("editPrioridade"),
   editDescricao: document.getElementById("editDescricao"),
   cancelEditReportBtn: document.getElementById("cancelEditReport"),
   saveEditedReportBtn: document.getElementById("saveEditedReport"),
@@ -133,28 +135,39 @@ function initModal() {
   const modal = elementos.viewModal;
   if (!modal) return;
 
-  function closeModal() {
+  function closeViewModal() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
+    reportAtualVisualizado = null;
   }
   
   if (elementos.viewModalClose) {
-    elementos.viewModalClose.addEventListener("click", closeModal);
+    elementos.viewModalClose.addEventListener("click", closeViewModal);
   }
   
-  if (elementos.viewModalBtnClose) {
-    elementos.viewModalBtnClose.addEventListener("click", closeModal);
+  if (elementos.closeViewModalBtn) {
+    elementos.closeViewModalBtn.addEventListener("click", closeViewModal);
+  }
+  
+  // Botão "Editar Report" no modal de visualização
+  if (elementos.editFromViewBtn) {
+    elementos.editFromViewBtn.addEventListener("click", function() {
+      if (reportAtualVisualizado) {
+        closeViewModal();
+        openEditReportModal(reportAtualVisualizado);
+      }
+    });
   }
   
   modal.addEventListener("click", function (event) {
     if (event.target === modal) {
-      closeModal();
+      closeViewModal();
     }
   });
   
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && modal.classList.contains("active")) {
-      closeModal();
+      closeViewModal();
     }
   });
 }
@@ -184,6 +197,7 @@ function openEditReportModal(reportData) {
   elementos.editData.value = formatarDataParaInput(reportData.data_criacao);
   elementos.editCategoria.value = reportData.nome_categoria || "";
   elementos.editStatus.value = reportData.nome_status || "";
+  elementos.editPrioridade.value = reportData.prioridade || "Média";
   elementos.editDescricao.value = reportData.descricao || "";
   
   elementos.editBairro.disabled = true;
@@ -215,6 +229,7 @@ function initEditModal() {
       data_criacao: elementos.editData.value,
       nome_categoria: elementos.editCategoria.value,
       nome_status: elementos.editStatus.value,
+      prioridade: elementos.editPrioridade.value,
       descricao: elementos.editDescricao.value,
     };
     
@@ -469,6 +484,9 @@ function adicionarEventosVisualizar(reports) {
       const id = e.currentTarget.getAttribute("data-id");
       const reportData = reports.find((r) => r.id == id);
       if (reportData) {
+        // Armazena o report atual
+        reportAtualVisualizado = reportData;
+        
         document.getElementById("modalReportId").textContent = reportData.id;
         document.getElementById("modalBairro").textContent = reportData.endereco;
         document.getElementById("modalData").textContent = new Date(
@@ -477,7 +495,7 @@ function adicionarEventosVisualizar(reports) {
         document.getElementById("modalCategoria").textContent = reportData.nome_categoria;
         document.getElementById("modalDescricao").textContent = reportData.descricao;
         document.getElementById("modalStatus").textContent = reportData.nome_status;
-        document.getElementById("modalPrioridade").textContent = "Alta";
+        document.getElementById("modalPrioridade").textContent = reportData.prioridade || "Média";
         document.getElementById("modalResponsavel").textContent = "Não atribuído";
         document.getElementById("modalDataPrevista").textContent = "Não definida";
 

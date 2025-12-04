@@ -2133,3 +2133,228 @@ body.dark-mode .modal-body .form-select:disabled {
 body.dark-mode .field-help {
   color: #9ca3af;
 }
+/* ===== ADICIONAR ESSAS LINHAS NO FINAL DO ARQUIVO reports.css ===== */
+
+/* Status Inválido */
+.status-inválido {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.15), rgba(156, 163, 175, 0.05));
+  color: #6b7280;
+  border: 2px solid rgba(156, 163, 175, 0.3);
+}
+
+.status-inválido::before {
+  display: none;
+}
+
+body.dark-mode .status-inválido {
+  background: linear-gradient(135deg, rgba(156, 163, 175, 0.2), rgba(156, 163, 175, 0.08));
+  color: #9ca3af;
+  border-color: rgba(156, 163, 175, 0.35);
+}
+
+/* Estilo para campos desabilitados no modal */
+.modal-body .form-input:disabled,
+.modal-body .form-select:disabled {
+  background-color: #f3f4f6 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  color: #6b7280 !important;
+  border-color: #d1d5db;
+}
+
+body.dark-mode .modal-body .form-input:disabled,
+body.dark-mode .modal-body .form-select:disabled {
+  background-color: #1f2937 !important;
+  color: #9ca3af !important;
+  border-color: #374151;
+}
+
+/* Texto de ajuda para campos bloqueados */
+.field-help {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.field-help i {
+  font-size: 0.75rem;
+}
+
+body.dark-mode .field-help {
+  color: #9ca3af;
+}
+
+/* ===== MODAL GRANDE DE VISUALIZAÇÃO ===== */
+.modal-large {
+  padding: 20px;
+}
+
+.modal-content-large {
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+}
+
+.modal-grid-large {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.modal-grid-large .modal-info,
+.modal-grid-large .modal-status {
+  background: var(--bg-main);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.modal-grid-large h4 {
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.modal-grid-large h4::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+
+.modal-grid-large .info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.modal-grid-large .info-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.modal-grid-large .info-label {
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  min-width: 120px;
+}
+
+.modal-grid-large .info-value {
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: right;
+  flex: 1;
+}
+
+.modal-imagens {
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-xl);
+  background: var(--bg-main);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.modal-imagens h4 {
+  font-size: 1.2rem;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.modal-imagens h4::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+
+.imagens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.imagem-placeholder {
+  height: 200px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  border: 2px dashed var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.imagem-placeholder:hover {
+  border-color: var(--color-primary);
+  background: var(--bg-hover);
+  transform: scale(1.02);
+}
+
+.imagem-placeholder i {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-md);
+  opacity: 0.5;
+}
+
+/* Responsividade do Modal Grande */
+@media (max-width: 992px) {
+  .modal-content-large {
+    max-width: 90%;
+  }
+  
+  .modal-grid-large {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-large {
+    padding: 10px;
+  }
+  
+  .modal-content-large {
+    width: 98%;
+    max-height: 95vh;
+  }
+  
+  .modal-grid-large .modal-info,
+  .modal-grid-large .modal-status {
+    padding: var(--spacing-lg);
+  }
+  
+  .modal-grid-large .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+  
+  .modal-grid-large .info-value {
+    text-align: left;
+  }
+  
+  .imagens-grid {
+    grid-template-columns: 1fr;
+  }
+}
