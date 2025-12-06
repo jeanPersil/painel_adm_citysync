@@ -1,20 +1,11 @@
 /**
  * SERVICE - Camada de regras de negócio para Reports
- *
- * Responsabilidades:
- * - Orquestrar operações com reports (CRUD, filtros, estatísticas)
- * - Aplicar transformações e mapeamentos de dados
- * - Implementar lógica de agregação e categorização
- * - Validar e processar dados antes do repositório
- * - Converter entre formatos (frontend ←→ banco)
- *
- * NÃO lida com HTTP (controller)
- * NÃO acessa banco diretamente (repository)
  */
 
 import reportRepositories from "../repositories/reportsRepositories.js";
 import ReportModel from "../models/reportModel.js";
 import { mapearCategoria, mapearStatus } from "../utils/utils.js";
+import emailService from "./emailService.js";
 
 class ReportService {
   async obterReportesPeriodo(periodoDeReports) {
@@ -67,7 +58,14 @@ class ReportService {
   }
 
   async editarReport(id, dados) {
-    const { endereco, descricao, categoria, status, url_imagem } = dados;
+    const { endereco, descricao, categoria, status, prioridade } = dados;
+
+    // Busca o report atual para comparar o status
+    const reportAtual = await reportRepositories.buscarReportCompleto(id);
+
+    if (!reportAtual) {
+      throw new Error("Report não encontrado");
+    }
 
     const dadosAtualizados = {
       endereco: endereco.trim(),
@@ -76,10 +74,59 @@ class ReportService {
       fk_status: mapearStatus(status),
     };
 
+    // Adiciona prioridade apenas se foi fornecida
+    if (prioridade) {
+      dadosAtualizados.prioridade = prioridade;
+    }
+
     const reportAtualizado = await reportRepositories.editar(
       parseInt(id),
       dadosAtualizados
     );
+
+    // Verifica se o status mudou e se deve enviar email
+    const statusMudou = reportAtual.nome_status !== status;
+    const statusQueEnviamEmail = ["Em andamento", "Resolvido", "Inválido"];
+
+    if (statusMudou && statusQueEnviamEmail.includes(status)) {
+      // Busca o email do usuário que criou o report
+      const emailUsuario = await reportRepositories.buscarEmailUsuario(
+        reportAtual.fk_usuario
+      );
+
+      if (emailUsuario) {
+        console.log(
+          `Status mudou de "${reportAtual.nome_status}" para "${status}". Enviando email para ${emailUsuario}...`
+        );
+
+        // Envia o email de forma assíncrona (não bloqueia a resposta)
+        emailService
+          .enviarNotificacaoStatus(
+            emailUsuario,
+            status,
+            id,
+            endereco
+          )
+          .then((result) => {
+            if (result.success) {
+              console.log(
+                `✅ Email enviado com sucesso para ${emailUsuario}`
+              );
+            } else {
+              console.error(
+                `❌ Falha ao enviar email: ${result.message}`
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Erro ao enviar email:", error);
+          });
+      } else {
+        console.warn(
+          `Usuário não possui email cadastrado. Report ID: ${id}`
+        );
+      }
+    }
 
     return reportAtualizado;
   }

@@ -1,15 +1,5 @@
 /**
  * REPOSITORY - Camada de acesso a dados para Reports
- *
- * Responsabilidades:
- * - Executar operações CRUD no banco de dados
- * - Construir queries complexas com filtros
- * - Mapear entre formato da aplicação e formato do banco
- * - Tratar erros específicos de banco de dados
- * - Otimizar consultas e queries
- *
- * NÃO contém regras de negócio (service)
- * NÃO valida dados (service/controller)
  */
 
 import supabase from "../config.js";
@@ -20,24 +10,23 @@ class ReportRepositories {
       .from("listar_reportes")
       .select("*")
       .gte("data_criacao", dataInicio.toISOString())
-      .lte("data_criacao", dataFim.toISOString()).order("data_criacao", { ascending: false });;
+      .lte("data_criacao", dataFim.toISOString())
+      .order("data_criacao", { ascending: false });
 
     if (error) {
-      console.error("Erro ao buscar usuario por ID: " + error);
-      throw new Error("Não foi possível obter os reports por periodo");
+      console.error("Erro ao buscar reports por período:", error);
+      throw new Error("Não foi possível obter os reports por período");
     }
 
     return data;
   }
-
-  // repositories/reportRepository.js
 
   async filtrar(filtros, page, limit) {
     const { endereco, data, status, pesquisar, categoria } = filtros;
 
     let query = supabase
       .from("listar_reportes")
-      .select("*", { count: "exact" }); 
+      .select("*", { count: "exact" });
 
     if (endereco) {
       query = query.ilike("endereco", `%${endereco}%`);
@@ -59,16 +48,12 @@ class ReportRepositories {
     }
     if (pesquisar) {
       const termo = `%${pesquisar}%`;
-      
-      
       query = query.or(
         `descricao.ilike."${termo}",endereco.ilike."${termo}",nome_categoria.ilike."${termo}"`
       );
     }
 
-
     query = query.order("data_criacao", { ascending: false });
-    // --------------------------------
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -80,8 +65,8 @@ class ReportRepositories {
       throw new Error("Falha ao filtrar os reportes: " + error.message);
 
     return { reportsData, total: count };
-
   }
+
   async editar(id, dadosParaAtualizar) {
     const { data, error } = await supabase
       .from("reportes")
@@ -110,6 +95,48 @@ class ReportRepositories {
     }
 
     return data;
+  }
+
+  /**
+   * Busca o report completo com todas as informações
+   * incluindo o status atual
+   */
+  async buscarReportCompleto(id) {
+    const { data, error } = await supabase
+      .from("listar_reportes")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      console.error("Erro ao buscar report completo:", error);
+      return null;
+    }
+
+    return data;
+  }
+
+  /**
+   * Busca o email do usuário que criou o report
+   */
+  async buscarEmailUsuario(usuarioId) {
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("email")
+        .eq("id", usuarioId)
+        .single();
+
+      if (error || !data) {
+        console.error("Erro ao buscar email do usuário:", error);
+        return null;
+      }
+
+      return data.email;
+    } catch (error) {
+      console.error("Erro na busca de email:", error);
+      return null;
+    }
   }
 
   async excluir(id) {
