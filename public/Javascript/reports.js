@@ -5,25 +5,24 @@
 import {
   carregarPerfilUsuario,
   mostrarNotificacao,
-  reconnectModalListeners,
   authUtils,
 } from "./utils.js";
 import { api } from "./api.js";
 
-// const btnSair = document.getElementById("btnSair"); // REMOVIDO DAQUI
-
-// --- ADICIONADO: Variáveis de estado para paginação ---
+// Variáveis de estado para paginação
 let paginaAtual = 1;
-const limitePorPagina = 10; // Defina quantos itens por página você quer
+const limitePorPagina = 10;
 
-// --- Objeto de elementos do DOM ---
+// Variável global para armazenar o report atual sendo visualizado
+let reportAtualVisualizado = null;
+
+// Objeto de elementos do DOM
 const elementos = {
   // Modais
   viewModal: document.getElementById("reportModal"),
   viewModalClose: document.getElementById("modalClose"),
-  viewModalBtnClose: document.querySelector(
-    "#reportModal .modal-footer .btn-secondary"
-  ),
+  closeViewModalBtn: document.getElementById("closeViewModalBtn"),
+  editFromViewBtn: document.getElementById("editFromViewBtn"),
   editModal: document.getElementById("editReportModal"),
   editModalClose: document.getElementById("editModalClose"),
 
@@ -35,6 +34,7 @@ const elementos = {
   editData: document.getElementById("editData"),
   editCategoria: document.getElementById("editCategoria"),
   editStatus: document.getElementById("editStatus"),
+  editPrioridade: document.getElementById("editPrioridade"),
   editDescricao: document.getElementById("editDescricao"),
   cancelEditReportBtn: document.getElementById("cancelEditReport"),
   saveEditedReportBtn: document.getElementById("saveEditedReport"),
@@ -48,38 +48,31 @@ const elementos = {
   ),
   searchInput: document.querySelector(".search-field input"),
 
-  // --- MODIFICADO: Seletores para os elementos do HTML ---
-  // (Não precisamos de IDs, vamos usar as classes existentes)
+  // Paginação
   resultadosInfoSpan: document.querySelector(".tabela-footer .resultados-info"),
   paginacaoContainer: document.querySelector(".tabela-footer .paginacao"),
-  btnSair: document.getElementById("btnSair"), // Adicionado aqui
+  btnSair: document.getElementById("btnSair"),
 };
 
 document.addEventListener("DOMContentLoaded", function () {
-  // Verificar se estamos na página correta
   if (!document.querySelector(".container-painel")) {
     return;
   }
 
-  // Inicializar todas as funcionalidades
   initDarkMode();
   initMenuToggle();
   initModal();
   initEditModal();
   initTableInteractions();
-  initFilters(); // Esta função agora também carrega os dados iniciais
+  initFilters();
   carregarPerfilUsuario();
 
-  // --- ADICIONADO: Listener do btnSair movido para cá ---
   if (elementos.btnSair) {
     elementos.btnSair.addEventListener("click", async (e) => {
       e.preventDefault();
       authUtils.logout();
     });
   }
-
-  // --- REMOVIDO: A paginação falsa não é mais inicializada ---
-  // initPagination();
 });
 
 // ==================================
@@ -88,12 +81,14 @@ document.addEventListener("DOMContentLoaded", function () {
 function initDarkMode() {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const body = document.body;
-  if (!darkModeToggle) return; // Segurança
+  if (!darkModeToggle) return;
+  
   const isDarkMode = localStorage.getItem("darkMode") === "true";
   if (isDarkMode) {
     body.classList.add("dark-mode");
     darkModeToggle.checked = true;
   }
+  
   darkModeToggle.addEventListener("change", function () {
     body.classList.toggle("dark-mode");
     localStorage.setItem("darkMode", body.classList.contains("dark-mode"));
@@ -107,7 +102,9 @@ function initMenuToggle() {
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.querySelector(".barra-lateral");
   const overlay = document.getElementById("overlay");
-  if (!menuToggle || !sidebar || !overlay) return; // Segurança
+  
+  if (!menuToggle || !sidebar || !overlay) return;
+  
   menuToggle.addEventListener("click", function () {
     sidebar.classList.toggle("open");
     overlay.classList.toggle("active");
@@ -115,11 +112,13 @@ function initMenuToggle() {
       ? "hidden"
       : "";
   });
+  
   overlay.addEventListener("click", function () {
     sidebar.classList.remove("open");
     overlay.classList.remove("active");
     document.body.style.overflow = "";
   });
+  
   window.addEventListener("resize", function () {
     if (window.innerWidth > 992) {
       sidebar.classList.remove("open");
@@ -130,34 +129,52 @@ function initMenuToggle() {
 }
 
 // ==================================
-// 4. MODAL DE VISUALIZAÇÃO E EDIÇÃO
+// 4. MODAL DE VISUALIZAÇÃO
 // ==================================
 function initModal() {
   const modal = elementos.viewModal;
   if (!modal) return;
 
-  function closeModal() {
+  function closeViewModal() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
+    reportAtualVisualizado = null;
   }
+  
   if (elementos.viewModalClose) {
-    elementos.viewModalClose.addEventListener("click", closeModal);
+    elementos.viewModalClose.addEventListener("click", closeViewModal);
   }
-  if (elementos.viewModalBtnClose) {
-    elementos.viewModalBtnClose.addEventListener("click", closeModal);
+  
+  if (elementos.closeViewModalBtn) {
+    elementos.closeViewModalBtn.addEventListener("click", closeViewModal);
   }
+  
+  // Botão "Editar Report" no modal de visualização
+  if (elementos.editFromViewBtn) {
+    elementos.editFromViewBtn.addEventListener("click", function() {
+      if (reportAtualVisualizado) {
+        closeViewModal();
+        openEditReportModal(reportAtualVisualizado);
+      }
+    });
+  }
+  
   modal.addEventListener("click", function (event) {
     if (event.target === modal) {
-      closeModal();
+      closeViewModal();
     }
   });
+  
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && modal.classList.contains("active")) {
-      closeModal();
+      closeViewModal();
     }
   });
 }
 
+// ==================================
+// 5. MODAL DE EDIÇÃO
+// ==================================
 function formatarDataParaInput(dataString) {
   if (!dataString) return "";
   try {
@@ -173,13 +190,19 @@ function formatarDataParaInput(dataString) {
 
 function openEditReportModal(reportData) {
   if (!elementos.editModal) return;
+  
   elementos.editModalReportId.textContent = reportData.id;
   elementos.editReportInternalId.value = reportData.id;
   elementos.editBairro.value = reportData.endereco || "";
   elementos.editData.value = formatarDataParaInput(reportData.data_criacao);
   elementos.editCategoria.value = reportData.nome_categoria || "";
   elementos.editStatus.value = reportData.nome_status || "";
+  elementos.editPrioridade.value = reportData.prioridade || "Média";
   elementos.editDescricao.value = reportData.descricao || "";
+  
+  elementos.editBairro.disabled = true;
+  elementos.editData.disabled = true;
+  
   elementos.editModal.classList.add("active");
   document.body.style.overflow = "hidden";
 }
@@ -192,20 +215,24 @@ function closeEditReportModal() {
 }
 
 function initEditModal() {
-  if (!elementos.editModal || !elementos.editReportForm) return; // Segurança
+  if (!elementos.editModal || !elementos.editReportForm) return;
+  
   elementos.editModalClose.addEventListener("click", closeEditReportModal);
   elementos.cancelEditReportBtn.addEventListener("click", closeEditReportModal);
 
   elementos.editReportForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const reportId = elementos.editReportInternalId.value;
+    
     const updatedData = {
       endereco: elementos.editBairro.value,
       data_criacao: elementos.editData.value,
       nome_categoria: elementos.editCategoria.value,
       nome_status: elementos.editStatus.value,
+      prioridade: elementos.editPrioridade.value,
       descricao: elementos.editDescricao.value,
     };
+    
     elementos.saveEditedReportBtn.textContent = "Salvando...";
     elementos.saveEditedReportBtn.disabled = true;
 
@@ -216,8 +243,7 @@ function initEditModal() {
       }
       mostrarNotificacao("Report atualizado com sucesso!", "sucesso");
       closeEditReportModal();
-      // --- MODIFICADO: Chamar a função principal de recarga ---
-      applyFilters(); // Recarrega os dados da página atual
+      applyFilters();
     } catch (error) {
       console.error("Erro ao salvar edições:", error);
       mostrarNotificacao(`Erro ao atualizar: ${error.message}`, "erro");
@@ -229,17 +255,15 @@ function initEditModal() {
 }
 
 // ==================================
-// 5. INTERAÇÕES DA TABELA
+// 6. INTERAÇÕES DA TABELA
 // ==================================
 function initTableInteractions() {
-  // NOTA: A ordenação (sortTable) só ordena os 10 itens da página atual.
-  const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
   const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
   
   if (headerCheckbox) {
     headerCheckbox.addEventListener("change", function () {
       const isChecked = this.checked;
-      const pageCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]'); // Seleciona apenas os da página atual
+      const pageCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
       pageCheckboxes.forEach((checkbox) => {
         checkbox.checked = isChecked;
         toggleRowSelection(checkbox);
@@ -247,33 +271,15 @@ function initTableInteractions() {
     });
   }
 
-  checkboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", function () {
-      toggleRowSelection(this);
-      updateHeaderCheckbox();
-    });
-  });
-
   function toggleRowSelection(checkbox) {
     const row = checkbox.closest("tr");
-    if(row) { // Verificação de segurança
+    if(row) {
       if (checkbox.checked) {
         row.classList.add("selected");
       } else {
         row.classList.remove("selected");
       }
     }
-  }
-
-  function updateHeaderCheckbox() {
-    if (!headerCheckbox) return;
-    const checkedCount = document.querySelectorAll(
-      'tbody input[type="checkbox"]:checked'
-    ).length;
-    const totalCount = document.querySelectorAll('tbody input[type="checkbox"]').length;
-    headerCheckbox.checked = (totalCount > 0) && (checkedCount === totalCount);
-    headerCheckbox.indeterminate =
-      checkedCount > 0 && checkedCount < totalCount;
   }
 
   const sortButtons = document.querySelectorAll("th i.fa-sort");
@@ -289,7 +295,7 @@ function initTableInteractions() {
 function sortTable(columnIndex) {
   const table = document.querySelector("table");
   const tbody = table.querySelector("tbody");
-  if (!table || !tbody) return; // Segurança
+  if (!table || !tbody) return;
   
   const rows = Array.from(tbody.querySelectorAll("tr"));
   const isAscending = !table.querySelectorAll("th")[columnIndex].classList.contains("asc");
@@ -317,51 +323,38 @@ function sortTable(columnIndex) {
 }
 
 // ==================================
-// 6. FILTROS, PESQUISA E RENDERIZAÇÃO
+// 7. FILTROS E RENDERIZAÇÃO
 // ==================================
-
 function initFilters() {
-  // Aplicar filtros
   if (elementos.applyFiltersBtn) {
     elementos.applyFiltersBtn.addEventListener("click", () => {
-      paginaAtual = 1; // Reseta a página ao aplicar filtros
+      paginaAtual = 1;
       applyFilters();
     });
   }
 
-  // Limpar filtros
   if (elementos.clearFiltersBtn) {
     elementos.clearFiltersBtn.addEventListener("click", () => {
-      paginaAtual = 1; // Reseta a página
+      paginaAtual = 1;
       clearFilters();
     });
   }
 
-  // Pesquisa em tempo real
   if (elementos.searchInput) {
     elementos.searchInput.addEventListener(
       "input",
       debounce(() => {
-        paginaAtual = 1; // Reseta a página
+        paginaAtual = 1;
         applyFilters();
-      }, 500) // Aumentado para 500ms para chamadas de API
+      }, 500)
     );
   }
 
-  // Carga inicial
   applyFilters();
 }
 
-/**
- * Função principal que busca dados da API
- */
 async function applyFilters() {
-  // Captura dos campos
-  const pesquisarInput = document.querySelector(
-    ".search-field .filter-input"
-  );
-  // NOTA: Esta forma de pegar os inputs é frágil.
-  // É melhor dar IDs para eles no HTML.
+  const pesquisarInput = document.querySelector(".search-field .filter-input");
   const bairroInput = document.querySelectorAll(".filter-input")[1];
   const dataInput = document.querySelectorAll(".filter-input")[2];
   const statusSelect = document.querySelectorAll(".select-field select")[0];
@@ -371,10 +364,8 @@ async function applyFilters() {
   const endereco = bairroInput?.value?.trim() || "";
   const data = dataInput?.value || "";
   const status = statusSelect?.value !== "todos" ? statusSelect?.value : "";
-  const categoria =
-    categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
+  const categoria = categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
 
-  // --- MODIFICADO: Adiciona paginação aos parâmetros ---
   const params = new URLSearchParams({
     pesquisar,
     endereco,
@@ -386,7 +377,6 @@ async function applyFilters() {
   });
 
   try {
-    // --- ADICIONADO: Estado de carregamento ---
     elementos.tbody.innerHTML =
       '<tr><td colspan="7" style="text-align:center; padding:20px;">Carregando...</td></tr>';
     if (elementos.paginacaoContainer) elementos.paginacaoContainer.innerHTML = "";
@@ -400,7 +390,6 @@ async function applyFilters() {
       return;
     }
 
-    // --- MODIFICADO: Chama as novas funções de renderização ---
     renderTable(result.reports);
     renderizarPaginacao(result.totalPages, result.currentPage);
     atualizarResultadosInfo(
@@ -424,16 +413,9 @@ function atualizar_cards(total, reports) {
   if (cardTotal) cardTotal.textContent = total;
 
   if (reports && Array.isArray(reports)) {
-    // ATENÇÃO: Estes counts são baseados APENAS nos itens da página atual.
-    const pendentes = reports.filter(
-      (r) => r.nome_status === "Pendente"
-    ).length;
-    const emAndamento = reports.filter(
-      (r) => r.nome_status === "Em andamento"
-    ).length;
-    const resolvidos = reports.filter(
-      (r) => r.nome_status === "Resolvido"
-    ).length;
+    const pendentes = reports.filter((r) => r.nome_status === "Pendente").length;
+    const emAndamento = reports.filter((r) => r.nome_status === "Em andamento").length;
+    const resolvidos = reports.filter((r) => r.nome_status === "Resolvido").length;
 
     if (cardPendente) cardPendente.textContent = pendentes;
     if (cardAndamento) cardAndamento.textContent = emAndamento;
@@ -468,7 +450,7 @@ function renderTable(reports) {
       ${report.nome_status || "-"}
     </span></td>
     <td><span class="prioridade ${
-      report.nome_categoria?.toLowerCase().replace("/", "-").replace(" ", "-") || "" // Corrige classes CSS
+      report.nome_categoria?.toLowerCase().replace("/", "-").replace(" ", "-") || ""
     }">
       ${report.nome_categoria || "-"}
     </span></td>
@@ -489,11 +471,9 @@ function renderTable(reports) {
     tbody.appendChild(tr);
   });
 
-  // Re-anexa os eventos
   adicionarEventosRemover();
   adicionarEventosEditar(reports);
   adicionarEventosVisualizar(reports);
-  // Re-inicializa os eventos de checkbox/sort para a nova tabela
   initTableInteractions();
 }
 
@@ -504,26 +484,20 @@ function adicionarEventosVisualizar(reports) {
       const id = e.currentTarget.getAttribute("data-id");
       const reportData = reports.find((r) => r.id == id);
       if (reportData) {
-        // Preenche o modal de VISUALIZAÇÃO
+        // Armazena o report atual
+        reportAtualVisualizado = reportData;
+        
         document.getElementById("modalReportId").textContent = reportData.id;
-        document.getElementById("modalBairro").textContent =
-          reportData.endereco;
+        document.getElementById("modalBairro").textContent = reportData.endereco;
         document.getElementById("modalData").textContent = new Date(
           reportData.data_criacao
         ).toLocaleDateString("pt-BR");
-        document.getElementById("modalCategoria").textContent =
-          reportData.nome_categoria;
-        document.getElementById("modalDescricao").textContent =
-          reportData.descricao;
-        document.getElementById("modalStatus").textContent =
-          reportData.nome_status;
-
-        // Dados fictícios (do seu HTML)
-        document.getElementById("modalPrioridade").textContent = "Alta";
-        document.getElementById("modalResponsavel").textContent =
-          "Não atribuído";
-        document.getElementById("modalDataPrevista").textContent =
-          "Não definida";
+        document.getElementById("modalCategoria").textContent = reportData.nome_categoria;
+        document.getElementById("modalDescricao").textContent = reportData.descricao;
+        document.getElementById("modalStatus").textContent = reportData.nome_status;
+        document.getElementById("modalPrioridade").textContent = reportData.prioridade || "Média";
+        document.getElementById("modalResponsavel").textContent = "Não atribuído";
+        document.getElementById("modalDataPrevista").textContent = "Não definida";
 
         elementos.viewModal.classList.add("active");
         document.body.style.overflow = "hidden";
@@ -542,10 +516,7 @@ function adicionarEventosEditar(reports) {
       if (reportData) {
         openEditReportModal(reportData);
       } else {
-        console.error(
-          "Não foi possível encontrar os dados do report para o ID:",
-          id
-        );
+        console.error("Não foi possível encontrar os dados do report para o ID:", id);
       }
     });
   });
@@ -558,6 +529,7 @@ function adicionarEventosRemover() {
       e.stopPropagation();
       const id = e.currentTarget.getAttribute("data-id");
       if (!confirm("Tem certeza que deseja excluir este report?")) return;
+      
       try {
         const result = await api.excluirReport(id);
         
@@ -565,12 +537,12 @@ function adicionarEventosRemover() {
           throw new Error(result.message || "Erro ao excluir");
         }
         
-        mostrarNotificacao("Reporte excluido com sucesso", "sucesso");
-        // --- ADICIONADO: Verifica se a página atual ficou vazia ---
-        if (elementos.tbody.rows.length === 1) { // Se só tinha 1 item
-          paginaAtual = Math.max(1, paginaAtual - 1); // Volta uma página
+        mostrarNotificacao("Reporte excluído com sucesso", "sucesso");
+        
+        if (elementos.tbody.rows.length === 1) {
+          paginaAtual = Math.max(1, paginaAtual - 1);
         }
-        applyFilters(); // Recarrega a página
+        applyFilters();
       } catch (error) {
         console.error("Erro ao excluir:", error);
         mostrarNotificacao(`Erro inesperado: ${error.message}`, "erro");
@@ -587,7 +559,7 @@ function clearFilters() {
       input.value = "";
     }
   });
-  applyFilters(); // Chama a função principal
+  applyFilters();
 }
 
 function debounce(func, wait) {
@@ -603,10 +575,8 @@ function debounce(func, wait) {
 }
 
 // ==================================
-// 7. PAGINAÇÃO
+// 8. PAGINAÇÃO
 // ==================================
-
-// --- ADICIONADO: Nova função para renderizar a paginação dinamicamente ---
 function renderizarPaginacao(totalPages, currentPage) {
   const container = elementos.paginacaoContainer;
   if (!container) {
@@ -614,12 +584,10 @@ function renderizarPaginacao(totalPages, currentPage) {
     return;
   }
   
-  // Limpa os botões estáticos ("1", "2", "3") do HTML
-  container.innerHTML = ""; 
+  container.innerHTML = "";
 
-  if (totalPages <= 1) return; // Não mostra nada se só tiver 1 página
+  if (totalPages <= 1) return;
 
-  // Botão "Anterior"
   const btnAnterior = document.createElement("button");
   btnAnterior.className = "btn-pagina";
   btnAnterior.innerHTML = `<i class="fas fa-chevron-left"></i>`;
@@ -627,12 +595,11 @@ function renderizarPaginacao(totalPages, currentPage) {
   btnAnterior.addEventListener("click", () => {
     if (currentPage > 1) {
       paginaAtual--;
-      applyFilters(); // Recarrega os dados da nova página
+      applyFilters();
     }
   });
   container.appendChild(btnAnterior);
 
-  // --- Lógica de Paginação Melhorada (Evita 1000 botões) ---
   const maxBotoes = 5;
   let inicio = Math.max(1, currentPage - Math.floor(maxBotoes / 2));
   let fim = Math.min(totalPages, inicio + maxBotoes - 1);
@@ -650,6 +617,7 @@ function renderizarPaginacao(totalPages, currentPage) {
       applyFilters();
     });
     container.appendChild(btnPrimeira);
+    
     if (inicio > 2) {
       const elipse = document.createElement("span");
       elipse.textContent = "...";
@@ -668,7 +636,7 @@ function renderizarPaginacao(totalPages, currentPage) {
     }
     btnPagina.addEventListener("click", () => {
       paginaAtual = i;
-      applyFilters(); // Recarrega os dados da página clicada
+      applyFilters();
     });
     container.appendChild(btnPagina);
   }
@@ -689,9 +657,7 @@ function renderizarPaginacao(totalPages, currentPage) {
     });
     container.appendChild(btnUltima);
   }
-  // --- Fim da Lógica de Paginação Melhorada ---
 
-  // Botão "Próximo"
   const btnProximo = document.createElement("button");
   btnProximo.className = "btn-pagina";
   btnProximo.innerHTML = `<i class="fas fa-chevron-right"></i>`;
@@ -699,13 +665,12 @@ function renderizarPaginacao(totalPages, currentPage) {
   btnProximo.addEventListener("click", () => {
     if (currentPage < totalPages) {
       paginaAtual++;
-      applyFilters(); // Recarrega os dados da nova página
+      applyFilters();
     }
   });
   container.appendChild(btnProximo);
 }
 
-// --- ADICIONADO: Nova função para atualizar o texto "Mostrando X de Y" ---
 function atualizarResultadosInfo(reportsLength, totalItems, currentPage) {
   const spanInfo = elementos.resultadosInfoSpan;
   if (!spanInfo) return;
@@ -719,4 +684,3 @@ function atualizarResultadosInfo(reportsLength, totalItems, currentPage) {
     spanInfo.textContent = `Mostrando ${from}-${to} de ${totalItems} resultados`;
   }
 }
-
