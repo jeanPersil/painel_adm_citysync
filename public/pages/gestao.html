@@ -293,81 +293,98 @@
     </div>
 
     <!-- Modal para visualizar detalhes do report -->
-    <div class="modal" id="reportModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Detalhes do Report #<span id="modalReportId">001</span></h3>
-          <button class="modal-close" id="modalClose">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="modal-grid">
-            <div class="modal-info">
-              <h4>Informações do Report</h4>
-              <div class="info-item">
-                <span class="info-label">Bairro:</span>
-                <span class="info-value" id="modalBairro">Centro</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Data:</span>
-                <span class="info-value" id="modalData">15/12/2024</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Categoria:</span>
-                <span class="info-value" id="modalCategoria"
-                  >Iluminação Pública</span
-                >
-              </div>
-              <div class="info-item">
-                <span class="info-label">Descrição:</span>
-                <span class="info-value" id="modalDescricao"
-                  >Poste de luz quebrado na Rua Principal</span
-                >
-              </div>
-            </div>
-            <div class="modal-status">
-              <h4>Status e Prioridade</h4>
-              <div class="info-item">
-                <span class="info-label">Status:</span>
-                <span class="info-value" id="modalStatus">Pendente</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Prioridade:</span>
-                <span class="info-value" id="modalPrioridade">Urgente</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Responsável:</span>
-                <span class="info-value" id="modalResponsavel">João Silva</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">Data Prevista:</span>
-                <span class="info-value" id="modalDataPrevista"
-                  >20/12/2024</span
-                >
-              </div>
-            </div>
+<div class="modal-view-overlay" id="reportModal">
+  <div class="modal-view-content">
+    <div class="modal-view-header">
+      <h3><i class="fas fa-file-alt"></i> Report #<span id="modalReportId">001</span></h3>
+      <button class="modal-view-close" id="modalClose">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-view-body">
+      <div class="modal-view-section">
+        <h4><i class="fas fa-info-circle"></i> Informações Principais</h4>
+        <div class="modal-view-info-grid">
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-map-marker-alt"></i> Localização
+            </span>
+            <span class="modal-view-info-value" id="modalBairro">Centro</span>
           </div>
-          <div class="modal-imagens">
-            <h4>Imagens do Report</h4>
-            <div class="imagens-grid">
-              <div class="imagem-placeholder">
-                <i class="fas fa-image"></i>
-                <span>Imagem 1</span>
-              </div>
-              <div class="imagem-placeholder">
-                <i class="fas fa-image"></i>
-                <span>Imagem 2</span>
-              </div>
-            </div>
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-calendar"></i> Data
+            </span>
+            <span class="modal-view-info-value" id="modalData">15/12/2024</span>
+          </div>
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-tags"></i> Categoria
+            </span>
+            <span class="modal-view-info-value" id="modalCategoria">Iluminação Pública</span>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary">Fechar</button>
-          <button class="btn btn-primary">Editar Report</button>
+      </div>
+      <div class="modal-view-section">
+        <h4><i class="fas fa-align-left"></i> Descrição</h4>
+        <div class="modal-view-description" id="modalDescricao">
+          Poste de luz quebrado na Rua Principal
+        </div>
+      </div>
+
+      <!-- Status e Acompanhamento -->
+      <div class="modal-view-section">
+        <h4><i class="fas fa-tasks"></i> Status e Acompanhamento</h4>
+        <div class="modal-view-info-grid">
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-flag"></i> Status
+            </span>
+            <span class="modal-view-info-value">
+              <span class="status status-pending" id="modalStatus">Pendente</span>
+            </span>
+          </div>
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-exclamation-triangle"></i> Prioridade
+            </span>
+            <span class="modal-view-info-value">
+              <span class="prioridade urgente" id="modalPrioridade">Urgente</span>
+            </span>
+          </div>
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-user"></i> Responsável
+            </span>
+            <span class="modal-view-info-value" id="modalResponsavel">Não atribuído</span>
+          </div>
+          <div class="modal-view-info-item">
+            <span class="modal-view-info-label">
+              <i class="fas fa-clock"></i> Previsão
+            </span>
+            <span class="modal-view-info-value" id="modalDataPrevista">Não definida</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Imagens -->
+      <div class="modal-view-section">
+        <h4><i class="fas fa-images"></i> Imagens Anexadas</h4>
+        <div class="modal-view-images-grid">
+          <div class="modal-view-image-placeholder">
+            <i class="fas fa-image"></i>
+            <span>Imagem 1</span>
+          </div>
+          <div class="modal-view-image-placeholder">
+            <i class="fas fa-image"></i>
+            <span>Imagem 2</span>
+          </div>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
     <!--- Modal para editar-->
 

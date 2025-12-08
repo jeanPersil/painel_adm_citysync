@@ -140,17 +140,17 @@ function initModal() {
     modal.classList.remove("active");
     document.body.style.overflow = "";
   }
+  
   if (elementos.viewModalClose) {
     elementos.viewModalClose.addEventListener("click", closeModal);
   }
-  if (elementos.viewModalBtnClose) {
-    elementos.viewModalBtnClose.addEventListener("click", closeModal);
-  }
+  
   modal.addEventListener("click", function (event) {
     if (event.target === modal) {
       closeModal();
     }
   });
+  
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape" && modal.classList.contains("active")) {
       closeModal();
@@ -504,27 +504,39 @@ function adicionarEventosVisualizar(reports) {
       const id = e.currentTarget.getAttribute("data-id");
       const reportData = reports.find((r) => r.id == id);
       if (reportData) {
-        // Preenche o modal de VISUALIZAÇÃO
+ 
         document.getElementById("modalReportId").textContent = reportData.id;
-        document.getElementById("modalBairro").textContent =
-          reportData.endereco;
+        document.getElementById("modalBairro").textContent = reportData.endereco || "-";
         document.getElementById("modalData").textContent = new Date(
           reportData.data_criacao
         ).toLocaleDateString("pt-BR");
-        document.getElementById("modalCategoria").textContent =
-          reportData.nome_categoria;
-        document.getElementById("modalDescricao").textContent =
-          reportData.descricao;
-        document.getElementById("modalStatus").textContent =
-          reportData.nome_status;
+        document.getElementById("modalCategoria").textContent = reportData.nome_categoria || "-";
+        document.getElementById("modalDescricao").textContent = reportData.descricao || "Sem descrição disponível";
+        
 
-        // Dados fictícios (do seu HTML)
-        document.getElementById("modalPrioridade").textContent = "Alta";
-        document.getElementById("modalResponsavel").textContent =
-          "Não atribuído";
-        document.getElementById("modalDataPrevista").textContent =
-          "Não definida";
+        const statusElement = document.getElementById("modalStatus");
+        statusElement.textContent = reportData.nome_status || "-";
+        statusElement.className = "status";
+        if (reportData.nome_status) {
+          statusElement.classList.add(
+            `status-${reportData.nome_status.toLowerCase().replace(" ", "-")}`
+          );
+        }
+        
+   
+        const prioridadeElement = document.getElementById("modalPrioridade");
+        prioridadeElement.textContent = reportData.nome_categoria || "-";
+        prioridadeElement.className = "prioridade";
+        if (reportData.nome_categoria) {
+          prioridadeElement.classList.add(
+            reportData.nome_categoria.toLowerCase().replace("/", "-").replace(" ", "-")
+          );
+        }
 
+        document.getElementById("modalResponsavel").textContent = "Não atribuído";
+        document.getElementById("modalDataPrevista").textContent = "Não definida";
+
+       
         elementos.viewModal.classList.add("active");
         document.body.style.overflow = "hidden";
       }
