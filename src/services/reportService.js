@@ -3,7 +3,7 @@
  */
 
 import reportRepositories from "../repositories/reportsRepositories.js";
-import ReportModel from "../models/reportModel.js";
+import ReportModel from "../models/reportModel.js"; // Importante: Agora traz a Factory junto
 import { mapearCategoria, mapearStatus } from "../utils/utils.js";
 import emailService from "./emailService.js";
 
@@ -58,73 +58,96 @@ class ReportService {
   }
 
   async editarReport(id, dados) {
-    const { endereco, descricao, categoria, status, prioridade } = dados;
+    const {
+      endereco,
+      descricao,
+      categoria,
+      status: novoStatusString,
+      prioridade,
+    } = dados;
 
-    // Busca o report atual para comparar o status
-    const reportAtual = await reportRepositories.buscarReportCompleto(id);
+    const dadosBanco = await reportRepositories.buscarReportCompleto(id);
 
-    if (!reportAtual) {
+    if (!dadosBanco) {
       throw new Error("Report não encontrado");
     }
 
-    const dadosAtualizados = {
-      endereco: endereco.trim(),
-      descricao: descricao.trim(),
-      fk_categoria: mapearCategoria(categoria),
-      fk_status: mapearStatus(status),
-    };
+    const reportModel = ReportModel.fromDb(dadosBanco);
+    const statusAnterior = reportModel.nome_status;
 
-    // Adiciona prioridade apenas se foi fornecida
-    if (prioridade) {
-      dadosAtualizados.prioridade = prioridade;
+    if (novoStatusString && novoStatusString !== statusAnterior) {
+      try {
+        switch (novoStatusString) {
+          case "Em analise":
+            reportModel.analise();
+            break;
+          case "Em andamento":
+            reportModel.andamento();
+            break;
+          case "Resolvido":
+            reportModel.resolver();
+            break;
+          case "Invalido":
+            reportModel.recusar();
+            break;
+          case "Pendente":
+            reportModel.pendente();
+            break;
+          default:
+            console.warn(
+              `Tentativa de status desconhecido: ${novoStatusString}`
+            );
+        }
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
 
+    const dadosAtualizados = {
+      endereco: endereco ? endereco.trim() : dadosBanco.endereco,
+      descricao: descricao ? descricao.trim() : dadosBanco.descricao,
+      fk_categoria: categoria
+        ? mapearCategoria(categoria)
+        : dadosBanco.fk_categoria,
+
+      fk_status: mapearStatus(reportModel.nome_status),
+
+      prioridade: prioridade || dadosBanco.prioridade,
+    };
+
+    // 5. Persiste no Banco de Dados
     const reportAtualizado = await reportRepositories.editar(
       parseInt(id),
       dadosAtualizados
     );
 
-    // Verifica se o status mudou e se deve enviar email
-    const statusMudou = reportAtual.nome_status !== status;
+    // 6. Envio de E-mail (Lógica mantida, mas verificando a mudança real)
+    const statusMudou = reportModel.nome_status !== statusAnterior;
     const statusQueEnviamEmail = ["Em andamento", "Resolvido", "Inválido"];
 
-    if (statusMudou && statusQueEnviamEmail.includes(status)) {
-      // Busca o email do usuário que criou o report
+    if (statusMudou && statusQueEnviamEmail.includes(reportModel.nome_status)) {
       const emailUsuario = await reportRepositories.buscarEmailUsuario(
-        reportAtual.fk_usuario
+        reportModel.fk_usuario
       );
 
       if (emailUsuario) {
         console.log(
-          `Status mudou de "${reportAtual.nome_status}" para "${status}". Enviando email para ${emailUsuario}...`
+          `Status mudou de "${statusAnterior}" para "${reportModel.nome_status}". Enviando email...`
         );
 
-        // Envia o email de forma assíncrona (não bloqueia a resposta)
         emailService
           .enviarNotificacaoStatus(
             emailUsuario,
-            status,
+            reportModel.nome_status, // Status novo
             id,
-            endereco
+            endereco || dadosBanco.endereco
           )
           .then((result) => {
-            if (result.success) {
-              console.log(
-                `✅ Email enviado com sucesso para ${emailUsuario}`
-              );
-            } else {
-              console.error(
-                `❌ Falha ao enviar email: ${result.message}`
-              );
-            }
+            if (result.success)
+              console.log(`✅ Email enviado para ${emailUsuario}`);
+            else console.error(`❌ Falha ao enviar email: ${result.message}`);
           })
-          .catch((error) => {
-            console.error("Erro ao enviar email:", error);
-          });
-      } else {
-        console.warn(
-          `Usuário não possui email cadastrado. Report ID: ${id}`
-        );
+          .catch((error) => console.error("Erro ao enviar email:", error));
       }
     }
 

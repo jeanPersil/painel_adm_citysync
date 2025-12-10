@@ -44,13 +44,16 @@ class ReportsController {
       const pageInt = parseInt(page);
       const limitInt = parseInt(limit);
 
-      const reportes = await reportService.filtrarReportes(filtros, pageInt, limitInt);
+      const reportes = await reportService.filtrarReportes(
+        filtros,
+        pageInt,
+        limitInt
+      );
 
       return res.status(200).json({
         success: true,
         ...reportes,
-      }); 
-
+      });
     } catch (error) {
       console.error("Erro interno:", error);
       return res.status(500).json({
@@ -109,6 +112,9 @@ class ReportsController {
         report_atualizado: reportAtualizado,
       });
     } catch (error) {
+      if (error.message.includes("[STATUS]")) {
+        return res.status(401).json({ message: error.message });
+      }
       console.error("💥 Erro interno no servidor:", error);
       return res.status(500).json({
         success: false,

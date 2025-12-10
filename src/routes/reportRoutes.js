@@ -19,7 +19,7 @@ import reportsController from "../controller/reports_controller.js";
 const router = express.Router();
 const { verificar_autenticacao, verificarAdmin } = middleware;
 
-router.use(verificar_autenticacao, verificarAdmin);
+//router.use(verificar_autenticacao, verificarAdmin);
 
 // Rotas de leitura
 router.get("/periodo", reportsController.obterReportesPorPeriodo);

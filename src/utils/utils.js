@@ -17,7 +17,8 @@ function mapearStatus(status) {
     pendente: 1,
     "em andamento": 2,
     resolvido: 3,
-    "inválido": 4,
+    invalido: 4,
+    "em analise": 5,
   };
 
   return mapeamento[status.toLowerCase()] || status;
@@ -28,8 +29,4 @@ function validarEmailBasico(email) {
   return regex.test(email);
 }
 
-export {
-  mapearCategoria,
-  mapearStatus,
-  validarEmailBasico,
-};
+export { mapearCategoria, mapearStatus, validarEmailBasico };

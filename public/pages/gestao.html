@@ -153,9 +153,10 @@
                 <select>
                   <option value="todos">Status: Todos</option>
                   <option value="Pendente">Pendente</option>
+                  <option value="Em analise">Em análise</option>
                   <option value="Em andamento">Em andamento</option>
                   <option value="Resolvido">Resolvido</option>
-                  <option value="Inválido">Inválido</option>
+                  <option value="Invalido">Inválido</option>
                 </select>
               </div>
               <div class="select-field">
@@ -267,7 +268,9 @@
               </div>
               <div class="info-item">
                 <span class="info-label">Responsável:</span>
-                <span class="info-value" id="modalResponsavel">Não atribuído</span>
+                <span class="info-value" id="modalResponsavel"
+                  >Não atribuído</span
+                >
               </div>
               <div class="info-item">
                 <span class="info-label">Data Prevista:</span>
@@ -292,7 +295,9 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" id="closeViewModalBtn">Fechar</button>
+          <button class="btn btn-secondary" id="closeViewModalBtn">
+            Fechar
+          </button>
           <button class="btn btn-primary" id="editFromViewBtn">
             <i class="fas fa-edit"></i> Editar Report
           </button>
@@ -332,12 +337,7 @@
               <!-- Data - DESABILITADA -->
               <div class="form-group">
                 <label for="editData">Data</label>
-                <input 
-                  type="date" 
-                  id="editData" 
-                  class="form-input" 
-                  disabled
-                />
+                <input type="date" id="editData" class="form-input" disabled />
                 <small class="field-help">
                   <i class="fas fa-lock"></i> Este campo não pode ser editado
                 </small>
@@ -362,9 +362,10 @@
                 <label for="editStatus">Status</label>
                 <select id="editStatus" class="form-select" required>
                   <option value="Pendente">Pendente</option>
+                  <option value="Em analise">Em análise</option>
                   <option value="Em andamento">Em andamento</option>
                   <option value="Resolvido">Resolvido</option>
-                  <option value="Inválido">Inválido</option>
+                  <option value="Invalido">Inválido</option>
                 </select>
               </div>
 
@@ -405,7 +406,7 @@
         </form>
       </div>
     </div>
-    
+
     <!-- Overlay para menu mobile -->
     <div class="overlay" id="overlay"></div>
     <script type="module" src="/Javascript/utils.js"></script>
