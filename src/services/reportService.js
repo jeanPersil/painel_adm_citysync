@@ -15,9 +15,20 @@ class ReportService {
 
     const data = await reportRepositories.reportesPeriodo(dataInicio, dataFim);
 
-    const reports = data.map((row) => ({
-      ...ReportModel.fromDb(row),
-    }));
+    const reports = data.map((row) => {
+      const model = ReportModel.fromDb(row);
+
+      return {
+        id: model.id,
+        endereco: model.endereco,
+        descricao: model.descricao,
+        prioridade: model.prioridade,
+        fk_usuario: model.fk_usuario,
+        nome_categoria: model.nome_categoria,
+        data_criacao: model.data_criacao,
+        nome_status: model.nome_status,
+      };
+    });
 
     const problemasResolvidos = reports.filter(
       (r) => r.nome_status === "Resolvido"

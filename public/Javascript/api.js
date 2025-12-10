@@ -4,11 +4,11 @@ class Api {
     this.url_api = "/api";
   }
 
-
   checkRateLimit(response) {
     if (response.status === 429) {
       window.location.href = "/pages/bloqueado.html";
-      return true; o
+      return true;
+      o;
     }
     return false;
   }
@@ -73,6 +73,8 @@ class Api {
         throw new Error(data.message);
       }
 
+      console.log(data);
+
       return data;
     } catch (error) {
       return {
@@ -82,35 +84,30 @@ class Api {
     }
   }
 
+  async obterReportsFiltrados(parametrosObjeto) {
+    try {
+      const queryString = new URLSearchParams(parametrosObjeto).toString();
 
-async obterReportsFiltrados(parametrosObjeto) {
-  try {
+      const response = await fetch(
+        `${this.url_api}/reports/filtrados?${queryString}`
+      );
 
-    const queryString = new URLSearchParams(parametrosObjeto).toString();
+      if (this.checkRateLimit(response)) return;
 
+      const result = await response.json();
 
-    const response = await fetch(
-      `${this.url_api}/reports/filtrados?${queryString}`
-    );
-
-    if (this.checkRateLimit(response)) return;
-
-    const result = await response.json();
-
-    if (!response.ok) {
-
-      throw new Error(result.message || "Erro ao carregar reportes.");
+      if (!response.ok) {
+        throw new Error(result.message || "Erro ao carregar reportes.");
+      }
+      return result;
+    } catch (error) {
+      console.error("Erro em obterReportsFiltrados:", error);
+      return {
+        success: false,
+        message: error.message || "Falha na requisição",
+      };
     }
-    return result;
-
-  } catch (error) {
-    console.error("Erro em obterReportsFiltrados:", error);
-    return {
-      success: false,
-      message: error.message || "Falha na requisição",
-    };
   }
-}
 
   async atualizarReport(reportId, dadosDoFormulario) {
     try {
@@ -121,15 +118,17 @@ async obterReportsFiltrados(parametrosObjeto) {
         status: dadosDoFormulario.nome_status,
       };
 
-
-      const response = await fetch(`${this.url_api}/reports/editar/${reportId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bodyParaBackend),
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${this.url_api}/reports/editar/${reportId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(bodyParaBackend),
+          credentials: "include",
+        }
+      );
 
       if (this.checkRateLimit(response)) return;
 
@@ -140,7 +139,6 @@ async obterReportsFiltrados(parametrosObjeto) {
       }
 
       return result;
-      
     } catch (error) {
       console.error("Erro em api.atualizarReport:", error);
       if (error instanceof SyntaxError) {
