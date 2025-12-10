@@ -1,6 +1,4 @@
-// ==================================
-// 1. CONFIGURAÇÃO INICIAL
-// ==================================
+// ===== SUBSTITUIR TODO O ARQUIVO public/Javascript/reports.js =====
 
 import {
   carregarPerfilUsuario,
@@ -22,7 +20,6 @@ const elementos = {
   viewModal: document.getElementById("reportModal"),
   viewModalClose: document.getElementById("modalClose"),
   closeViewModalBtn: document.getElementById("closeViewModalBtn"),
-  editFromViewBtn: document.getElementById("editFromViewBtn"),
   editModal: document.getElementById("editReportModal"),
   editModalClose: document.getElementById("editModalClose"),
 
@@ -75,9 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// ==================================
-// 2. MODO ESCURO
-// ==================================
+// ===== MODO ESCURO =====
 function initDarkMode() {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const body = document.body;
@@ -95,9 +90,7 @@ function initDarkMode() {
   });
 }
 
-// ==================================
-// 3. MENU MOBILE
-// ==================================
+// ===== MENU MOBILE =====
 function initMenuToggle() {
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.querySelector(".barra-lateral");
@@ -128,9 +121,7 @@ function initMenuToggle() {
   });
 }
 
-// ==================================
-// 4. MODAL DE VISUALIZAÇÃO
-// ==================================
+// ===== MODAL DE VISUALIZAÇÃO =====
 function initModal() {
   const modal = elementos.viewModal;
   if (!modal) return;
@@ -149,16 +140,6 @@ function initModal() {
     elementos.closeViewModalBtn.addEventListener("click", closeViewModal);
   }
   
-  // Botão "Editar Report" no modal de visualização
-  if (elementos.editFromViewBtn) {
-    elementos.editFromViewBtn.addEventListener("click", function() {
-      if (reportAtualVisualizado) {
-        closeViewModal();
-        openEditReportModal(reportAtualVisualizado);
-      }
-    });
-  }
-  
   modal.addEventListener("click", function (event) {
     if (event.target === modal) {
       closeViewModal();
@@ -172,9 +153,7 @@ function initModal() {
   });
 }
 
-// ==================================
-// 5. MODAL DE EDIÇÃO
-// ==================================
+// ===== MODAL DE EDIÇÃO =====
 function formatarDataParaInput(dataString) {
   if (!dataString) return "";
   try {
@@ -254,9 +233,7 @@ function initEditModal() {
   });
 }
 
-// ==================================
-// 6. INTERAÇÕES DA TABELA
-// ==================================
+// ===== INTERAÇÕES DA TABELA =====
 function initTableInteractions() {
   const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
   
@@ -322,9 +299,7 @@ function sortTable(columnIndex) {
   table.querySelectorAll("th")[columnIndex].classList.add(isAscending ? "asc" : "desc");
 }
 
-// ==================================
-// 7. FILTROS E RENDERIZAÇÃO
-// ==================================
+// ===== FILTROS E RENDERIZAÇÃO =====
 function initFilters() {
   if (elementos.applyFiltersBtn) {
     elementos.applyFiltersBtn.addEventListener("click", () => {
@@ -366,7 +341,7 @@ async function applyFilters() {
   const status = statusSelect?.value !== "todos" ? statusSelect?.value : "";
   const categoria = categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
 
-  const params = new URLSearchParams({
+  const params = {
     pesquisar,
     endereco,
     data,
@@ -374,7 +349,7 @@ async function applyFilters() {
     categoria,
     page: paginaAtual,
     limit: limitePorPagina,
-  });
+  };
 
   try {
     elementos.tbody.innerHTML =
@@ -483,27 +458,151 @@ function adicionarEventosVisualizar(reports) {
     button.addEventListener("click", (e) => {
       const id = e.currentTarget.getAttribute("data-id");
       const reportData = reports.find((r) => r.id == id);
+      
       if (reportData) {
-        // Armazena o report atual
         reportAtualVisualizado = reportData;
         
+        // Preenche dados básicos
         document.getElementById("modalReportId").textContent = reportData.id;
-        document.getElementById("modalBairro").textContent = reportData.endereco;
+        document.getElementById("modalBairro").textContent = reportData.endereco || "-";
         document.getElementById("modalData").textContent = new Date(
           reportData.data_criacao
         ).toLocaleDateString("pt-BR");
-        document.getElementById("modalCategoria").textContent = reportData.nome_categoria;
-        document.getElementById("modalDescricao").textContent = reportData.descricao;
-        document.getElementById("modalStatus").textContent = reportData.nome_status;
+        document.getElementById("modalCategoria").textContent = reportData.nome_categoria || "-";
+        document.getElementById("modalDescricao").textContent = reportData.descricao || "Sem descrição disponível";
+        
+        // Status com badge
+        const statusElement = document.getElementById("modalStatus");
+        const statusClass = reportData.nome_status?.toLowerCase().replace(" ", "-") || "indefinido";
+        statusElement.innerHTML = `<span class="status status-${statusClass}">${reportData.nome_status || "-"}</span>`;
+        
         document.getElementById("modalPrioridade").textContent = reportData.prioridade || "Média";
         document.getElementById("modalResponsavel").textContent = "Não atribuído";
         document.getElementById("modalDataPrevista").textContent = "Não definida";
 
+        // ===== NOVA LÓGICA PARA EXIBIR IMAGENS =====
+        exibirImagensDoReport(reportData);
+
+        // Mostra o modal com animação
         elementos.viewModal.classList.add("active");
         document.body.style.overflow = "hidden";
       }
     });
   });
+}
+
+// ===== ADICIONAR ESTA NOVA FUNÇÃO NO ARQUIVO public/Javascript/reports.js =====
+// ADICIONAR APÓS a função adicionarEventosVisualizar()
+
+/**
+ * Exibe as imagens do report no modal
+ * @param {Object} reportData - Dados do report
+ */
+function exibirImagensDoReport(reportData) {
+  const imagesContainer = document.querySelector(".modal-images-grid");
+  
+  if (!imagesContainer) {
+    console.error("Container de imagens não encontrado");
+    return;
+  }
+
+  // Limpa o container
+  imagesContainer.innerHTML = "";
+
+  // Verifica se há URL de imagem
+  if (reportData.url_imagem && reportData.url_imagem.trim() !== "") {
+    // Se for uma URL única
+    const imageUrl = reportData.url_imagem.trim();
+    
+    // Cria elemento de imagem real
+    const imageWrapper = document.createElement("div");
+    imageWrapper.className = "modal-image-wrapper";
+    
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = `Imagem do Report #${reportData.id}`;
+    img.className = "modal-image-real";
+    
+    // Adiciona loading state
+    img.addEventListener("load", () => {
+      imageWrapper.classList.add("loaded");
+    });
+    
+    img.addEventListener("error", () => {
+      // Se a imagem falhar ao carregar, mostra placeholder
+      imageWrapper.innerHTML = `
+        <div class="modal-image-placeholder error">
+          <i class="fas fa-image-slash"></i>
+          <span>Erro ao carregar imagem</span>
+        </div>
+      `;
+    });
+    
+    // Adiciona funcionalidade de expandir imagem
+    img.addEventListener("click", () => {
+      expandirImagem(imageUrl, reportData.id);
+    });
+    
+    imageWrapper.appendChild(img);
+    imagesContainer.appendChild(imageWrapper);
+    
+  } else {
+    // Se não houver imagem, mostra placeholder
+    imagesContainer.innerHTML = `
+      <div class="modal-image-placeholder">
+        <i class="fas fa-image"></i>
+        <span>Nenhuma imagem anexada</span>
+      </div>
+    `;
+  }
+}
+
+/**
+ * Expande a imagem em tela cheia
+ * @param {string} imageUrl - URL da imagem
+ * @param {number} reportId - ID do report
+ */
+function expandirImagem(imageUrl, reportId) {
+
+  const overlay = document.createElement("div");
+  overlay.className = "image-fullscreen-overlay";
+  overlay.innerHTML = `
+    <div class="image-fullscreen-content">
+      <button class="image-fullscreen-close" aria-label="Fechar">
+        <i class="fas fa-times"></i>
+      </button>
+      <img src="${imageUrl}" alt="Imagem do Report #${reportId}" />
+      <div class="image-fullscreen-info">
+        <span>Report #${reportId}</span>
+        <a href="${imageUrl}" download="report-${reportId}.jpg" class="image-download-btn">
+          <i class="fas fa-download"></i> Baixar Imagem
+        </a>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Fecha ao clicar no overlay ou botão fechar
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || e.target.closest(".image-fullscreen-close")) {
+      overlay.classList.add("closing");
+      setTimeout(() => overlay.remove(), 300);
+    }
+  });
+  
+  // Fecha com ESC
+  const handleEsc = (e) => {
+    if (e.key === "Escape") {
+      overlay.classList.add("closing");
+      setTimeout(() => overlay.remove(), 300);
+      document.removeEventListener("keydown", handleEsc);
+    }
+  };
+  document.addEventListener("keydown", handleEsc);
+  
+  // Anima entrada
+  setTimeout(() => overlay.classList.add("active"), 10);
 }
 
 function adicionarEventosEditar(reports) {
@@ -574,9 +673,7 @@ function debounce(func, wait) {
   };
 }
 
-// ==================================
-// 8. PAGINAÇÃO
-// ==================================
+// ===== PAGINAÇÃO =====
 function renderizarPaginacao(totalPages, currentPage) {
   const container = elementos.paginacaoContainer;
   if (!container) {
