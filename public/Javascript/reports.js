@@ -1,6 +1,4 @@
-// ==================================
-// 1. CONFIGURAÇÃO INICIAL
-// ==================================
+// ===== SUBSTITUIR TODO O ARQUIVO public/Javascript/reports.js =====
 
 import {
   carregarPerfilUsuario,
@@ -22,7 +20,6 @@ const elementos = {
   viewModal: document.getElementById("reportModal"),
   viewModalClose: document.getElementById("modalClose"),
   closeViewModalBtn: document.getElementById("closeViewModalBtn"),
-  editFromViewBtn: document.getElementById("editFromViewBtn"),
   editModal: document.getElementById("editReportModal"),
   editModalClose: document.getElementById("editModalClose"),
 
@@ -75,9 +72,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// ==================================
-// 2. MODO ESCURO
-// ==================================
+// ===== MODO ESCURO =====
 function initDarkMode() {
   const darkModeToggle = document.getElementById("dark-mode-toggle");
   const body = document.body;
@@ -95,9 +90,7 @@ function initDarkMode() {
   });
 }
 
-// ==================================
-// 3. MENU MOBILE
-// ==================================
+// ===== MENU MOBILE =====
 function initMenuToggle() {
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.querySelector(".barra-lateral");
@@ -128,9 +121,7 @@ function initMenuToggle() {
   });
 }
 
-// ==================================
-// 4. MODAL DE VISUALIZAÇÃO
-// ==================================
+// ===== MODAL DE VISUALIZAÇÃO =====
 function initModal() {
   const modal = elementos.viewModal;
   if (!modal) return;
@@ -149,16 +140,6 @@ function initModal() {
     elementos.closeViewModalBtn.addEventListener("click", closeViewModal);
   }
   
-  // Botão "Editar Report" no modal de visualização
-  if (elementos.editFromViewBtn) {
-    elementos.editFromViewBtn.addEventListener("click", function() {
-      if (reportAtualVisualizado) {
-        closeViewModal();
-        openEditReportModal(reportAtualVisualizado);
-      }
-    });
-  }
-  
   modal.addEventListener("click", function (event) {
     if (event.target === modal) {
       closeViewModal();
@@ -172,9 +153,7 @@ function initModal() {
   });
 }
 
-// ==================================
-// 5. MODAL DE EDIÇÃO
-// ==================================
+// ===== MODAL DE EDIÇÃO =====
 function formatarDataParaInput(dataString) {
   if (!dataString) return "";
   try {
@@ -254,9 +233,7 @@ function initEditModal() {
   });
 }
 
-// ==================================
-// 6. INTERAÇÕES DA TABELA
-// ==================================
+// ===== INTERAÇÕES DA TABELA =====
 function initTableInteractions() {
   const headerCheckbox = document.querySelector('thead input[type="checkbox"]');
   
@@ -322,9 +299,7 @@ function sortTable(columnIndex) {
   table.querySelectorAll("th")[columnIndex].classList.add(isAscending ? "asc" : "desc");
 }
 
-// ==================================
-// 7. FILTROS E RENDERIZAÇÃO
-// ==================================
+// ===== FILTROS E RENDERIZAÇÃO =====
 function initFilters() {
   if (elementos.applyFiltersBtn) {
     elementos.applyFiltersBtn.addEventListener("click", () => {
@@ -366,7 +341,7 @@ async function applyFilters() {
   const status = statusSelect?.value !== "todos" ? statusSelect?.value : "";
   const categoria = categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
 
-  const params = new URLSearchParams({
+  const params = {
     pesquisar,
     endereco,
     data,
@@ -374,7 +349,7 @@ async function applyFilters() {
     categoria,
     page: paginaAtual,
     limit: limitePorPagina,
-  });
+  };
 
   try {
     elementos.tbody.innerHTML =
@@ -483,18 +458,22 @@ function adicionarEventosVisualizar(reports) {
     button.addEventListener("click", (e) => {
       const id = e.currentTarget.getAttribute("data-id");
       const reportData = reports.find((r) => r.id == id);
+      
       if (reportData) {
-        // Armazena o report atual
         reportAtualVisualizado = reportData;
         
         document.getElementById("modalReportId").textContent = reportData.id;
-        document.getElementById("modalBairro").textContent = reportData.endereco;
+        document.getElementById("modalBairro").textContent = reportData.endereco || "-";
         document.getElementById("modalData").textContent = new Date(
           reportData.data_criacao
         ).toLocaleDateString("pt-BR");
-        document.getElementById("modalCategoria").textContent = reportData.nome_categoria;
-        document.getElementById("modalDescricao").textContent = reportData.descricao;
-        document.getElementById("modalStatus").textContent = reportData.nome_status;
+        document.getElementById("modalCategoria").textContent = reportData.nome_categoria || "-";
+        document.getElementById("modalDescricao").textContent = reportData.descricao || "Sem descrição disponível";
+        
+        const statusElement = document.getElementById("modalStatus");
+        const statusClass = reportData.nome_status?.toLowerCase().replace(" ", "-") || "indefinido";
+        statusElement.innerHTML = `<span class="status status-${statusClass}">${reportData.nome_status || "-"}</span>`;
+        
         document.getElementById("modalPrioridade").textContent = reportData.prioridade || "Média";
         document.getElementById("modalResponsavel").textContent = "Não atribuído";
         document.getElementById("modalDataPrevista").textContent = "Não definida";
@@ -574,9 +553,7 @@ function debounce(func, wait) {
   };
 }
 
-// ==================================
-// 8. PAGINAÇÃO
-// ==================================
+// ===== PAGINAÇÃO =====
 function renderizarPaginacao(totalPages, currentPage) {
   const container = elementos.paginacaoContainer;
   if (!container) {
