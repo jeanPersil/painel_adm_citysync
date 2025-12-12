@@ -104,7 +104,7 @@ function carregarDadosUsuario() {
     if (dadosSalvos) {
       const userData = JSON.parse(dadosSalvos);
 
-      // ✅ CORREÇÃO: Acessar a estrutura correta do objeto
+      
       estado.dadosUsuario = {
         nome: userData.nome || "Usuário",
         email: userData.email || "email@exemplo.com",
@@ -114,7 +114,7 @@ function carregarDadosUsuario() {
       console.log("Dados carregados:", estado.dadosUsuario);
     } else {
       console.warn("Nenhum dado de usuário encontrado no localStorage");
-      // ✅ Fallback caso não haja dados
+      
       estado.dadosUsuario = {
         nome: "Usuário",
         email: "email@exemplo.com",
@@ -122,7 +122,7 @@ function carregarDadosUsuario() {
       };
     }
 
-    // ✅ Atualizar interface imediatamente após carregar dados
+    
     atualizarInterfaceUsuario();
   } catch (error) {
     console.error("Erro ao carregar dados do usuário:", error);
@@ -211,11 +211,7 @@ function configurarEventListeners() {
     elementos.avatar.addEventListener("click", simularAlteracaoAvatar);
   }
 
-  // Notificações
-  if (elementos.notificationBell) {
-    elementos.notificationBell.addEventListener("click", mostrarNotificacoes);
-  }
-
+  
   // Redimensionamento
   window.addEventListener("resize", debounce(handleResize, 250));
 }
@@ -267,7 +263,7 @@ async function salvarDadosUsuario(e) {
   const novoNome = elementos.inputName.value;
   const novoEmail = elementos.inputEmail.value;
 
-  // --- 1. Validação do Frontend (seu código original, está ótimo) ---
+  
   if (!novoNome || !novoEmail) {
     mostrarNotificacao("Por favor, preencha todos os campos.", "erro");
     return;
@@ -339,17 +335,6 @@ function simularAlteracaoAvatar() {
   );
 }
 
-// ===== MOSTRAR NOTIFICAÇÕES =====
-function mostrarNotificacoes() {
-  const countElement = document.querySelector(".notification-count");
-  if (countElement && countElement.textContent !== "0") {
-    countElement.textContent = "0";
-    countElement.style.display = "none";
-    mostrarNotificacao("Notificações marcadas como lidas.", "info");
-  } else {
-    mostrarNotificacao("Nenhuma nova notificação.", "info");
-  }
-}
 
 // ===== ANIMAÇÕES =====
 function animarElementos() {

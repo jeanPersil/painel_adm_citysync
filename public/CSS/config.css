@@ -11,48 +11,7 @@
   --config-shadow-glow: 0 8px 24px rgba(102, 126, 234, 0.2);
 }
 
-/* ===== ANIMAÇÕES GLOBAIS ===== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
 
 /* ===== LAYOUT PRINCIPAL ===== */
 .secao-configuracoes {
@@ -125,16 +84,7 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scaleY(0.8);
-  }
-}
+
 
 .subtitulo-cartao {
   font-size: 0.95rem;
@@ -204,8 +154,8 @@ select:focus {
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 32px;
+  width: 50px;
+  height: 25px;
 }
 
 .switch input {
@@ -221,20 +171,19 @@ select:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--bg-main);
-  border: 2px solid var(--border-color);
+  
+ 
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .slider:before {
-  content: "✕";
+  
   position: absolute;
-  height: 24px;
-  width: 24px;
-  left: 3px;
-  bottom: 2px;
-  background: white;
+  height: 18px;
+  width: 18px;
+  left: 1px;
+  bottom: 3px;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -246,13 +195,12 @@ select:focus {
 }
 
 input:checked + .slider {
-  background: var(--config-gradient-primary);
   border-color: transparent;
   box-shadow: var(--config-shadow-glow);
 }
 
 input:checked + .slider:before {
-  content: "✓";
+ 
   transform: translateX(28px);
   color: var(--accent-blue);
 }
@@ -281,6 +229,7 @@ input:checked + .slider:before {
   position: relative;
   overflow: hidden;
   border: none;
+  
 }
 
 .action-btn::before,
@@ -295,10 +244,12 @@ input:checked + .slider:before {
   background: rgba(255, 255, 255, 0.3);
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
+  
 }
 
 .action-btn:hover::before,
 .botao-acao:hover::before {
+  
   width: 300px;
   height: 300px;
 }
@@ -329,6 +280,29 @@ input:checked + .slider:before {
 .botao-acao span {
   position: relative;
   z-index: 1;
+}
+.action-btn {
+  background: var(--config-gradient-primary);
+  color: white !important; /* Força texto branco */
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+  border: none;
+}
+
+.action-btn span {
+  color: white !important; /* Força texto branco no span */
+  position: relative;
+  z-index: 1;
+}
+
+.action-btn i {
+  color: white !important; /* Força ícone branco */
+  position: relative;
+  z-index: 1;
+}
+
+.action-btn:hover span,
+.action-btn:hover i {
+  color: white !important;
 }
 
 .botao-acao {
@@ -644,4 +618,137 @@ select:focus-visible,
 [data-tooltip]:hover::after {
   opacity: 1;
   transform: translateX(-50%) translateY(-4px);
+}
+
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Aumenta espaço entre bolinha e texto */
+  padding: 8px 16px 8px 28px; /* Adiciona padding à esquerda para a bolinha */
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: visible; /* Muda para visible */
+}
+
+.status::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px; /* Aumenta tamanho da bolinha */
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-50%) scale(1.3);
+  }
+}
+
+.status-ativo {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+  color: var(--accent-green);
+  border: 2px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-inativo {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+  color: var(--accent-red);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ========================================
+   RESPONSIVIDADE MOBILE
+   ======================================== */
+
+@media (max-width: 992px) {
+  .barra-lateral {
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    height: 100%;
+    z-index: 1000;
+    width: 280px !important;
+  }
+  
+  .barra-lateral.open {
+    transform: translateX(0) !important;
+  }
+  
+  .menu-toggle {
+    display: block !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .barra-lateral {
+    transform: translateX(0) !important;
+  }
+  
+  .menu-toggle {
+    display: none !important;
+  }
+}
+
+/* ========================================
+   OVERLAY PARA MOBILE
+   ======================================== */
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* ========================================
+   AJUSTES MODO ESCURO
+   ======================================== */
+
+body.dark-mode .action-btn {
+  color: white !important;
+}
+
+body.dark-mode .action-btn span,
+body.dark-mode .action-btn i {
+  color: white !important;
+}
+
+body.dark-mode .status-ativo {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+  color: #22c55e;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+body.dark-mode .status-inativo {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.4);
 }

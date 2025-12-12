@@ -63,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initTableInteractions();
   initFilters();
   carregarPerfilUsuario();
+  initExportButton();
 
   if (elementos.btnSair) {
     elementos.btnSair.addEventListener("click", async (e) => {
@@ -328,6 +329,137 @@ function initFilters() {
   applyFilters();
 }
 
+// ===== ADICIONAR NO ARQUIVO reports.js =====
+// ===== APÓS A FUNÇÃO initFilters() =====
+
+/**
+ * Inicializa o botão de exportação
+ */
+function initExportButton() {
+  const exportBtn = document.querySelector('.btn-secondary');
+  
+  if (!exportBtn) return;
+  
+  exportBtn.addEventListener('click', async () => {
+    // Desabilita o botão durante a exportação
+    exportBtn.disabled = true;
+    exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
+    
+    try {
+      // Pega os filtros atuais
+      const pesquisarInput = document.querySelector(".search-field .filter-input");
+      const bairroInput = document.querySelectorAll(".filter-input")[1];
+      const dataInput = document.querySelectorAll(".filter-input")[2];
+      const statusSelect = document.querySelectorAll(".select-field select")[0];
+      const categoriaSelect = document.querySelectorAll(".select-field select")[1];
+
+      const pesquisar = pesquisarInput?.value?.trim() || "";
+      const endereco = bairroInput?.value?.trim() || "";
+      const data = dataInput?.value || "";
+      const status = statusSelect?.value !== "todos" ? statusSelect?.value : "";
+      const categoria = categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
+
+      // Busca TODOS os reports com os filtros aplicados (sem paginação)
+      const params = {
+        pesquisar,
+        endereco,
+        data,
+        status,
+        categoria,
+        page: 1,
+        limit: 99999 // Pega todos os registros
+      };
+      
+      const result = await api.obterReportsFiltrados(params);
+      
+      if (!result.success || !result.reports) {
+        throw new Error('Erro ao buscar reports para exportação');
+      }
+      
+      // Exporta para CSV
+      exportarParaCSV(result.reports);
+      
+      mostrarNotificacao('Arquivo exportado com sucesso!', 'sucesso');
+      
+    } catch (error) {
+      console.error('Erro ao exportar:', error);
+      mostrarNotificacao('Erro ao exportar arquivo: ' + error.message, 'erro');
+    } finally {
+      // Restaura o botão
+      exportBtn.disabled = false;
+      exportBtn.innerHTML = '<i class="fas fa-download"></i> Exportar';
+    }
+  });
+}
+
+/**
+ * Exporta os reports para arquivo CSV
+ * @param {Array} reports - Array de reports a serem exportados
+ */
+function exportarParaCSV(reports) {
+  if (!reports || reports.length === 0) {
+    mostrarNotificacao('Nenhum report para exportar', 'aviso');
+    return;
+  }
+  
+  // Define os cabeçalhos do CSV
+  const headers = [
+    'ID',
+    'Endereço',
+    'Data de Criação',
+    'Status',
+    'Categoria',
+    'Prioridade',
+    'Descrição',
+    'URL Imagem'
+  ];
+  
+  // Converte os reports para linhas CSV
+  const rows = reports.map(report => [
+    report.id || '',
+    `"${(report.endereco || '').replace(/"/g, '""')}"`, // Escapa aspas duplas
+    report.data_criacao ? new Date(report.data_criacao).toLocaleDateString('pt-BR') : '',
+    report.nome_status || '',
+    report.nome_categoria || '',
+    report.prioridade || '',
+    `"${(report.descricao || '').replace(/"/g, '""')}"`, // Escapa aspas duplas
+    report.url_imagem || ''
+  ]);
+  
+  // Monta o conteúdo CSV
+  const csvContent = [
+    headers.join(','),
+    ...rows.map(row => row.join(','))
+  ].join('\n');
+  
+  // Adiciona BOM para UTF-8 (garante acentuação correta no Excel)
+  const BOM = '\uFEFF';
+  const csvContentWithBOM = BOM + csvContent;
+  
+  // Cria o blob e faz o download
+  const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  
+  // Gera nome do arquivo com data/hora atual
+  const now = new Date();
+  const fileName = `reports_citysync_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.csv`;
+  
+  // Cria e clica no link de download
+  if (navigator.msSaveBlob) {
+    // IE 10+
+    navigator.msSaveBlob(blob, fileName);
+  } else {
+    link.href = URL.createObjectURL(blob);
+    link.download = fileName;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Libera a URL criada
+    setTimeout(() => URL.revokeObjectURL(link.href), 100);
+  }
+}
 async function applyFilters() {
   const pesquisarInput = document.querySelector(".search-field .filter-input");
   const bairroInput = document.querySelectorAll(".filter-input")[1];

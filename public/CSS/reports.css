@@ -1,6 +1,5 @@
 
-
-@import url(\"dashboard.css\");
+@import url("dashboard.css");
 
 
 :root {
@@ -204,38 +203,30 @@ body {
 
 /* 4. SIDEBAR  */
 
+/* ===== ADICIONAR ESTAS REGRAS NO ARQUIVO reports.css =====
+   LOCALIZAÇÃO: Adicionar após a seção "4. SIDEBAR" (linha ~170)
+   OU substituir as regras .barra-lateral existentes */
+
+/* Sobrescrever estilos da barra lateral para Reports */
 .barra-lateral {
-  width: 280px;
-  background: var(--bg-sidebar);
-  color: var(--text-inverse);
+  width: 280px !important;
+  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%) !important;
+  color: #ffffff !important;
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-xl) 0;
+  padding: 0;
+  padding-top: var(--spacing-xl);
   box-shadow: var(--shadow-xl);
   transition: all var(--transition-slow);
   z-index: var(--z-fixed);
   position: relative;
   overflow: hidden;
+  min-height: 100vh;
 }
 
-
-.barra-lateral::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0%, 100% { opacity: 0; transform: translateX(-100%); }
-  50% { opacity: 1; transform: translateX(100%); }
-}
-
-.sidebar-header {
+/* Garantir que o header tenha o estilo correto */
+.barra-lateral .sidebar-header,
+.barra-lateral .barra-lateral-header {
   padding: 0 var(--spacing-xl);
   font-size: 1.75rem;
   font-weight: 700;
@@ -246,231 +237,226 @@ body {
   align-items: center;
   gap: var(--spacing-md);
   position: relative;
+  color: #ffffff !important;
 }
 
-.sidebar-header::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: var(--spacing-xl);
-  right: var(--spacing-xl);
-  height: 2px;
-  background: var(--gradient-primary);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--transition-slow);
+.barra-lateral .sidebar-header h2,
+.barra-lateral .barra-lateral-header h2 {
+  color: #ffffff !important;
+  font-size: 1.5rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
 }
 
-.sidebar-header:hover::after {
-  transform: scaleX(1);
+.barra-lateral .sidebar-header h2 span,
+.barra-lateral .barra-lateral-header h2 span {
+  color: #ffffff !important;
+  display: inline !important;
 }
 
-.sidebar-header i {
+/* Ícone do header */
+.barra-lateral .sidebar-header i,
+.barra-lateral .barra-lateral-header i {
   font-size: 2rem;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: pulse 2s ease-in-out infinite;
+  color: #ffffff !important;
+  background: none;
+  -webkit-text-fill-color: #ffffff;
+  animation: none;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-}
-
-
-.sidebar-nav {
+/* Itens de navegação */
+.barra-lateral .sidebar-nav,
+.barra-lateral .barra-lateral-nav {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xs);
   padding: 0 var(--spacing-md);
+  overflow-y: auto;
 }
 
-.nav-item {
+.barra-lateral .nav-item,
+.barra-lateral .sidebar-nav .nav-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
   padding: var(--spacing-md) var(--spacing-lg);
-  color: rgba(255, 255, 255, 0.85);
+  color: #ecf0f1 !important;
   text-decoration: none;
   border-radius: var(--radius-lg);
   transition: all var(--transition-base);
   position: relative;
   overflow: hidden;
   font-weight: 500;
+  white-space: nowrap;
 }
 
-.nav-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: var(--gradient-primary);
-  transform: scaleY(0);
-  transition: transform var(--transition-base);
+.barra-lateral .nav-item span {
+  color: #ecf0f1 !important;
+  display: inline !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transform: translateX(4px);
-  box-shadow: var(--shadow-md);
-}
-
-.nav-item:hover::before {
-  transform: scaleY(1);
-}
-
-.nav-item.active {
-  background: rgba(102, 126, 234, 0.2);
-  color: white;
-  box-shadow: var(--shadow-glow);
-}
-
-.nav-item.active::before {
-  transform: scaleY(1);
-}
-
-.nav-item i {
+.barra-lateral .nav-item i {
   font-size: 1.25rem;
   width: 24px;
   text-align: center;
   transition: transform var(--transition-base);
+  color: #ecf0f1 !important;
 }
 
-.nav-item:hover i {
-  transform: scale(1.1);
+/* Hover nos itens */
+.barra-lateral .nav-item:hover {
+  background: #34495e !important;
+  color: #ffffff !important;
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
 }
 
+.barra-lateral .nav-item:hover span,
+.barra-lateral .nav-item:hover i {
+  color: #ffffff !important;
+}
 
-.barra-lateral-footer {
+/* Item ativo */
+.barra-lateral .nav-item.active {
+  background: #34495e !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.barra-lateral .nav-item.active span,
+.barra-lateral .nav-item.active i {
+  color: #ffffff !important;
+}
+
+/* Barra lateral no modo escuro */
+body.dark-mode .barra-lateral {
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+}
+
+body.dark-mode .barra-lateral .nav-item:hover,
+body.dark-mode .barra-lateral .nav-item.active {
+  background: #2d3748 !important;
+}
+
+/* Toggle de modo escuro */
+.barra-lateral .barra-lateral-footer,
+.barra-lateral .sidebar-footer {
+  margin-top: auto;
   padding: var(--spacing-xl) var(--spacing-lg);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-
-.modo-toggle {
+.barra-lateral .modo-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: var(--spacing-xl);
-  color: rgba(255, 255, 255, 0.85);
+  color: #ecf0f1 !important;
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-md);
   transition: background var(--transition-base);
 }
 
-.modo-toggle:hover {
+.barra-lateral .modo-toggle span {
+  color: #ecf0f1 !important;
+  display: inline !important;
+}
+
+.barra-lateral .modo-toggle:hover {
   background: rgba(255, 255, 255, 0.05);
 }
 
-
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 56px;
-  height: 28px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.2);
-  transition: var(--transition-base);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-}
-
-.slider:before {
-  content: \"☀️\";
-  position: absolute;
-  height: 22px;
-  width: 22px;
-  left: 2px;
-  bottom: 1px;
-  background: white;
-  transition: var(--transition-base);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  box-shadow: var(--shadow-md);
-}
-
-input:checked + .slider {
-  background: var(--gradient-primary);
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-glow);
-}
-
-input:checked + .slider:before {
-  content: \"🌙\";
-  transform: translateX(28px);
-}
-
-.slider.round {
-  border-radius: var(--radius-full);
-}
-
-.slider.round:before {
-  border-radius: 50%;
-}
-
-/* Botão Sair */
-.sidebar-footer {
-  padding: 0;
-}
-
+/* Botão sair */
 .botao-sair {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  color: rgba(255, 255, 255, 0.85);
+  gap: 15px;
+  color: #ecf0f1 !important;
   text-decoration: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
-  font-weight: 500;
-  position: relative;
-  overflow: hidden;
+  padding: 12px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
-.botao-sair::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--gradient-danger);
-  opacity: 0;
-  transition: opacity var(--transition-base);
+.botao-sair span {
+  display: inline !important;
+  color: #ecf0f1 !important;
 }
 
-.botao-sair:hover::before {
-  opacity: 1;
+.botao-sair i {
+  color: #ecf0f1 !important;
 }
 
 .botao-sair:hover {
-  color: white;
-  transform: translateX(4px);
-  box-shadow: var(--shadow-lg);
+  background-color: #c0392b;
+  color: #ffffff !important;
 }
 
-.botao-sair i,
-.botao-sair span {
-  position: relative;
-  z-index: 1;
+.botao-sair:hover span,
+.botao-sair:hover i {
+  color: #ffffff !important;
+}
+
+
+body.dark-mode .botao-sair:hover {
+  background-color: #dc2626;
+}
+/* Responsividade - Mobile */
+@media (max-width: 992px) {
+  .barra-lateral {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100%;
+    width: 280px !important;
+    z-index: var(--z-modal);
+    transition: transform var(--transition-slow);
+  }
+
+  .barra-lateral.open {
+    transform: translateX(280px);
+    box-shadow: var(--shadow-2xl);
+  }
+
+  /* Garantir que textos sejam visíveis no mobile */
+  .barra-lateral.open .sidebar-header h2 span,
+  .barra-lateral.open .nav-item span,
+  .barra-lateral.open .modo-toggle span,
+  .barra-lateral.open .botao-sair span,
+  .barra-lateral.open .logout-btn span {
+    display: inline !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Ajustes para telas grandes quando sidebar está recolhida */
+@media (min-width: 1200px) {
+  .barra-lateral.collapsed {
+    width: 80px !important;
+  }
+
+  .barra-lateral.collapsed .sidebar-header h2 span,
+  .barra-lateral.collapsed .nav-item span,
+  .barra-lateral.collapsed .modo-toggle span,
+  .barra-lateral.collapsed .botao-sair span {
+    display: none !important;
+  }
+
+  .barra-lateral.collapsed .sidebar-header {
+    justify-content: center;
+    padding: var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .barra-lateral.collapsed .nav-item {
+    justify-content: center;
+    padding: var(--spacing-md);
+  }
 }
 
 /* 5. CONTEÚDO PRINCIPAL */
@@ -613,59 +599,7 @@ body.dark-mode .main-header {
 }
 
 
-.notification-bell {
-  position: relative;
-  cursor: pointer;
-  color: var(--text-primary);
-  font-size: 1.35rem;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-lg);
-  transition: all var(--transition-base);
-}
 
-.notification-bell:hover {
-  background: var(--bg-hover);
-  color: var(--color-primary);
-  transform: scale(1.05);
-}
-
-.notification-bell i {
-  animation: bellRing 2s ease-in-out infinite;
-}
-
-@keyframes bellRing {
-  0%, 100% { transform: rotate(0deg); }
-  10%, 30% { transform: rotate(-10deg); }
-  20%, 40% { transform: rotate(10deg); }
-}
-
-.notification-count {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  background: var(--gradient-danger);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 700;
-  min-width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid var(--bg-card);
-  box-shadow: var(--shadow-md);
-  animation: pulseScale 2s ease-in-out infinite;
-}
-
-@keyframes pulseScale {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
 
 
 .user-profile {
