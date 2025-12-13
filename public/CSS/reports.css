@@ -3402,23 +3402,7 @@ body.dark-mode .modal-view-item {
 }
 
 .modal-image-wrapper::after {
-  content: '🔍';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: 2rem;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-  z-index: 2;
-  pointer-events: none;
+  display: none;
 }
 
 .modal-image-wrapper:hover::after {
@@ -3722,26 +3706,6 @@ body.dark-mode .modal-image-placeholder.error {
 
 .modal-image-wrapper:hover::before {
   opacity: 1;
-}
-
-.modal-image-wrapper::after {
-  content: '🔍';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0);
-  font-size: 2rem;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease;
-  z-index: 2;
-  pointer-events: none;
 }
 
 .modal-image-wrapper:hover::after {

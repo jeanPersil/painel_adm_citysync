@@ -329,24 +329,17 @@ function initFilters() {
   applyFilters();
 }
 
-// ===== ADICIONAR NO ARQUIVO reports.js =====
-// ===== APÓS A FUNÇÃO initFilters() =====
-
-/**
- * Inicializa o botão de exportação
- */
+// ===== EXPORTAÇÃO =====
 function initExportButton() {
   const exportBtn = document.querySelector('.btn-secondary');
   
   if (!exportBtn) return;
   
   exportBtn.addEventListener('click', async () => {
-    // Desabilita o botão durante a exportação
     exportBtn.disabled = true;
     exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exportando...';
     
     try {
-      // Pega os filtros atuais
       const pesquisarInput = document.querySelector(".search-field .filter-input");
       const bairroInput = document.querySelectorAll(".filter-input")[1];
       const dataInput = document.querySelectorAll(".filter-input")[2];
@@ -359,7 +352,6 @@ function initExportButton() {
       const status = statusSelect?.value !== "todos" ? statusSelect?.value : "";
       const categoria = categoriaSelect?.value !== "" ? categoriaSelect?.value : "";
 
-      // Busca TODOS os reports com os filtros aplicados (sem paginação)
       const params = {
         pesquisar,
         endereco,
@@ -367,7 +359,7 @@ function initExportButton() {
         status,
         categoria,
         page: 1,
-        limit: 99999 // Pega todos os registros
+        limit: 99999
       };
       
       const result = await api.obterReportsFiltrados(params);
@@ -376,7 +368,6 @@ function initExportButton() {
         throw new Error('Erro ao buscar reports para exportação');
       }
       
-      // Exporta para CSV
       exportarParaCSV(result.reports);
       
       mostrarNotificacao('Arquivo exportado com sucesso!', 'sucesso');
@@ -385,24 +376,18 @@ function initExportButton() {
       console.error('Erro ao exportar:', error);
       mostrarNotificacao('Erro ao exportar arquivo: ' + error.message, 'erro');
     } finally {
-      // Restaura o botão
       exportBtn.disabled = false;
       exportBtn.innerHTML = '<i class="fas fa-download"></i> Exportar';
     }
   });
 }
 
-/**
- * Exporta os reports para arquivo CSV
- * @param {Array} reports - Array de reports a serem exportados
- */
 function exportarParaCSV(reports) {
   if (!reports || reports.length === 0) {
     mostrarNotificacao('Nenhum report para exportar', 'aviso');
     return;
   }
   
-  // Define os cabeçalhos do CSV
   const headers = [
     'ID',
     'Endereço',
@@ -414,39 +399,32 @@ function exportarParaCSV(reports) {
     'URL Imagem'
   ];
   
-  // Converte os reports para linhas CSV
   const rows = reports.map(report => [
     report.id || '',
-    `"${(report.endereco || '').replace(/"/g, '""')}"`, // Escapa aspas duplas
+    `"${(report.endereco || '').replace(/"/g, '""')}"`,
     report.data_criacao ? new Date(report.data_criacao).toLocaleDateString('pt-BR') : '',
     report.nome_status || '',
     report.nome_categoria || '',
     report.prioridade || '',
-    `"${(report.descricao || '').replace(/"/g, '""')}"`, // Escapa aspas duplas
+    `"${(report.descricao || '').replace(/"/g, '""')}"`,
     report.url_imagem || ''
   ]);
   
-  // Monta o conteúdo CSV
   const csvContent = [
     headers.join(','),
     ...rows.map(row => row.join(','))
   ].join('\n');
   
-  // Adiciona BOM para UTF-8 (garante acentuação correta no Excel)
   const BOM = '\uFEFF';
   const csvContentWithBOM = BOM + csvContent;
   
-  // Cria o blob e faz o download
   const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   
-  // Gera nome do arquivo com data/hora atual
   const now = new Date();
   const fileName = `reports_citysync_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}.csv`;
   
-  // Cria e clica no link de download
   if (navigator.msSaveBlob) {
-    // IE 10+
     navigator.msSaveBlob(blob, fileName);
   } else {
     link.href = URL.createObjectURL(blob);
@@ -456,10 +434,10 @@ function exportarParaCSV(reports) {
     link.click();
     document.body.removeChild(link);
     
-    // Libera a URL criada
     setTimeout(() => URL.revokeObjectURL(link.href), 100);
   }
 }
+
 async function applyFilters() {
   const pesquisarInput = document.querySelector(".search-field .filter-input");
   const bairroInput = document.querySelectorAll(".filter-input")[1];
@@ -506,7 +484,7 @@ async function applyFilters() {
     );
     atualizar_cards(result.totalItems, result.reports);
   } catch (error) {
-    console.error("Erro na requisição:", error);
+    console.error("Erro interno:", error);
     elementos.tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px;">Erro fatal na requisição.</td></tr>`;
   }
 }
@@ -594,7 +572,6 @@ function adicionarEventosVisualizar(reports) {
       if (reportData) {
         reportAtualVisualizado = reportData;
         
-        // Preenche dados básicos
         document.getElementById("modalReportId").textContent = reportData.id;
         document.getElementById("modalBairro").textContent = reportData.endereco || "-";
         document.getElementById("modalData").textContent = new Date(
@@ -603,7 +580,6 @@ function adicionarEventosVisualizar(reports) {
         document.getElementById("modalCategoria").textContent = reportData.nome_categoria || "-";
         document.getElementById("modalDescricao").textContent = reportData.descricao || "Sem descrição disponível";
         
-        // Status com badge
         const statusElement = document.getElementById("modalStatus");
         const statusClass = reportData.nome_status?.toLowerCase().replace(" ", "-") || "indefinido";
         statusElement.innerHTML = `<span class="status status-${statusClass}">${reportData.nome_status || "-"}</span>`;
@@ -612,19 +588,14 @@ function adicionarEventosVisualizar(reports) {
         document.getElementById("modalResponsavel").textContent = "Não atribuído";
         document.getElementById("modalDataPrevista").textContent = "Não definida";
 
-        // ===== NOVA LÓGICA PARA EXIBIR IMAGENS =====
         exibirImagensDoReport(reportData);
 
-        // Mostra o modal com animação
         elementos.viewModal.classList.add("active");
         document.body.style.overflow = "hidden";
       }
     });
   });
 }
-
-// ===== ADICIONAR ESTA NOVA FUNÇÃO NO ARQUIVO public/Javascript/reports.js =====
-// ADICIONAR APÓS a função adicionarEventosVisualizar()
 
 /**
  * Exibe as imagens do report no modal
@@ -638,15 +609,11 @@ function exibirImagensDoReport(reportData) {
     return;
   }
 
-  // Limpa o container
   imagesContainer.innerHTML = "";
 
-  // Verifica se há URL de imagem
   if (reportData.url_imagem && reportData.url_imagem.trim() !== "") {
-    // Se for uma URL única
     const imageUrl = reportData.url_imagem.trim();
     
-    // Cria elemento de imagem real
     const imageWrapper = document.createElement("div");
     imageWrapper.className = "modal-image-wrapper";
     
@@ -655,13 +622,11 @@ function exibirImagensDoReport(reportData) {
     img.alt = `Imagem do Report #${reportData.id}`;
     img.className = "modal-image-real";
     
-    // Adiciona loading state
     img.addEventListener("load", () => {
       imageWrapper.classList.add("loaded");
     });
     
     img.addEventListener("error", () => {
-      // Se a imagem falhar ao carregar, mostra placeholder
       imageWrapper.innerHTML = `
         <div class="modal-image-placeholder error">
           <i class="fas fa-image-slash"></i>
@@ -670,8 +635,8 @@ function exibirImagensDoReport(reportData) {
       `;
     });
     
-    // Adiciona funcionalidade de expandir imagem
-    img.addEventListener("click", () => {
+    // ✅ CORRIGIDO: Click no wrapper inteiro, não apenas na imagem
+    imageWrapper.addEventListener("click", () => {
       expandirImagem(imageUrl, reportData.id);
     });
     
@@ -679,7 +644,6 @@ function exibirImagensDoReport(reportData) {
     imagesContainer.appendChild(imageWrapper);
     
   } else {
-    // Se não houver imagem, mostra placeholder
     imagesContainer.innerHTML = `
       <div class="modal-image-placeholder">
         <i class="fas fa-image"></i>
@@ -695,7 +659,6 @@ function exibirImagensDoReport(reportData) {
  * @param {number} reportId - ID do report
  */
 function expandirImagem(imageUrl, reportId) {
-
   const overlay = document.createElement("div");
   overlay.className = "image-fullscreen-overlay";
   overlay.innerHTML = `
@@ -706,16 +669,12 @@ function expandirImagem(imageUrl, reportId) {
       <img src="${imageUrl}" alt="Imagem do Report #${reportId}" />
       <div class="image-fullscreen-info">
         <span>Report #${reportId}</span>
-        <a href="${imageUrl}" download="report-${reportId}.jpg" class="image-download-btn">
-          <i class="fas fa-download"></i> Baixar Imagem
-        </a>
       </div>
     </div>
   `;
   
   document.body.appendChild(overlay);
   
-  // Fecha ao clicar no overlay ou botão fechar
   overlay.addEventListener("click", (e) => {
     if (e.target === overlay || e.target.closest(".image-fullscreen-close")) {
       overlay.classList.add("closing");
@@ -723,7 +682,6 @@ function expandirImagem(imageUrl, reportId) {
     }
   });
   
-  // Fecha com ESC
   const handleEsc = (e) => {
     if (e.key === "Escape") {
       overlay.classList.add("closing");
@@ -733,7 +691,6 @@ function expandirImagem(imageUrl, reportId) {
   };
   document.addEventListener("keydown", handleEsc);
   
-  // Anima entrada
   setTimeout(() => overlay.classList.add("active"), 10);
 }
 
