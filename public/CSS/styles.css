@@ -1,10 +1,10 @@
 :root{
-  --fundo1:#4f46e5;
-  --fundo2:#06b6d4;
+  --fundo1:#203852;
+  --fundo2:#274463;
   --cartao:#ffffff;
   --texto:#0f172a;
   --texto-muted:#64748b;
-  --anel:rgba(79,70,229,.35);
+  --anel:rgba(44,62,80,.35);
   --sombra:0 10px 30px rgba(2,6,23,.25);
   --borda:1px solid rgba(255,255,255,.18);
 }
@@ -312,7 +312,7 @@ body{
   border-radius:14px; 
   font-weight:700; 
   font-size:clamp(15px, 2vw, 16px);
-  background:linear-gradient(135deg,#4f46e5,#06b6d4);
+  background:linear-gradient(135deg,#353355,#37636b);
   color:#fff; 
   cursor:pointer; 
   transition:transform .05s ease, filter .2s ease, box-shadow .2s ease;
