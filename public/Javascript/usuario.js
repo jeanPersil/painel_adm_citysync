@@ -54,7 +54,7 @@ let estado = {
 document.addEventListener("DOMContentLoaded", function () {
   inicializarElementos();
   criarOverlay();
-  carregarDadosUsuario(); // ✅ CARREGAR DADOS PRIMEIRO
+  carregarDadosUsuario();
   carregarPreferencias();
   inicializarAplicacao();
 });
@@ -74,6 +74,7 @@ function inicializarElementos() {
     profileCardRole: document.querySelector(".profile-card .role"),
     inputName: document.getElementById("name"),
     inputEmail: document.getElementById("email"),
+    inputPassword: document.getElementById("password"),
   };
 }
 
@@ -104,7 +105,6 @@ function carregarDadosUsuario() {
     if (dadosSalvos) {
       const userData = JSON.parse(dadosSalvos);
 
-      
       estado.dadosUsuario = {
         nome: userData.nome || "Usuário",
         email: userData.email || "email@exemplo.com",
@@ -114,7 +114,7 @@ function carregarDadosUsuario() {
       console.log("Dados carregados:", estado.dadosUsuario);
     } else {
       console.warn("Nenhum dado de usuário encontrado no localStorage");
-      
+
       estado.dadosUsuario = {
         nome: "Usuário",
         email: "email@exemplo.com",
@@ -122,7 +122,6 @@ function carregarDadosUsuario() {
       };
     }
 
-    
     atualizarInterfaceUsuario();
   } catch (error) {
     console.error("Erro ao carregar dados do usuário:", error);
@@ -211,7 +210,6 @@ function configurarEventListeners() {
     elementos.avatar.addEventListener("click", simularAlteracaoAvatar);
   }
 
-  
   // Redimensionamento
   window.addEventListener("resize", debounce(handleResize, 250));
 }
@@ -262,8 +260,8 @@ async function salvarDadosUsuario(e) {
 
   const novoNome = elementos.inputName.value;
   const novoEmail = elementos.inputEmail.value;
+  const novaSenha = elementos.inputPassword.value;
 
-  
   if (!novoNome || !novoEmail) {
     mostrarNotificacao("Por favor, preencha todos os campos.", "erro");
     return;
@@ -275,11 +273,11 @@ async function salvarDadosUsuario(e) {
   }
 
   try {
-    await api.editar_dados(novoNome, novoEmail);
+    await api.editar_dados(novoNome, novoEmail, novaSenha);
 
     estado.dadosUsuario.nome = novoNome;
     estado.dadosUsuario.email = novoEmail;
-
+    elementos.inputPassword.value = "";
     const userDataAtualizado = {
       ...JSON.parse(
         localStorage.getItem(CONFIG.LOCAL_STORAGE_KEYS.DADOS_USUARIO) || "{}"
@@ -334,7 +332,6 @@ function simularAlteracaoAvatar() {
     "info"
   );
 }
-
 
 // ===== ANIMAÇÕES =====
 function animarElementos() {

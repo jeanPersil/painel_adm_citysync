@@ -34,7 +34,6 @@ class UserController {
       res.cookie("authToken", session.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        maxAge: 3600000,
         sameSite: "strict",
       });
 
@@ -81,39 +80,53 @@ class UserController {
     }
   }
 
-  // CONTROLLER CORRIGIDO
-
   async editar_dados(req, res) {
     try {
       const token = req.cookies.authToken;
-      const { novoNome, novoEmail } = req.body;
+      const { novoNome, novoEmail, novaSenha } = req.body;
 
       if (!token) {
-        return res.status(401).json({
-          success: false,
-          message: "Token não fornecido",
-        });
+        return res
+          .status(401)
+          .json({ success: false, message: "Token não fornecido" });
       }
 
-      if (!novoNome && !novoEmail) {
+      if (!novoNome && !novoEmail && !novaSenha) {
         return res.status(400).json({
           success: false,
-          message: "Nenhum dado (nome ou email) fornecido para atualização",
+          message: "Nenhum dado fornecido para atualização",
         });
       }
 
-      if (
-        (novoNome !== undefined && novoNome.trim() === "") ||
-        (novoEmail !== undefined && novoEmail.trim() === "")
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Nome ou E-mail não podem ser campos vazios se forem fornecidos.",
-        });
+      if (novoNome !== undefined && novoNome.trim() === "") {
+        return res
+          .status(400)
+          .json({ success: false, message: "Nome inválido" });
       }
 
-      await userServices.editar_dados(novoNome, novoEmail, token);
+      if (novoEmail !== undefined) {
+        if (novoEmail.trim() === "" || !validarEmailBasico(novoEmail)) {
+          return res
+            .status(400)
+            .json({ success: false, message: "E-mail inválido" });
+        }
+      }
+
+      if (novaSenha !== undefined && novaSenha.length > 0) {
+        if (novaSenha.trim().length < 6) {
+          return res.status(400).json({
+            success: false,
+            message: "A senha deve ter no mínimo 6 caracteres",
+          });
+        }
+      }
+
+      await userServices.editar_dados({
+        nome: novoNome,
+        email: novoEmail,
+        senha: novaSenha,
+        token,
+      });
 
       return res.status(200).json({
         success: true,
@@ -122,7 +135,7 @@ class UserController {
     } catch (error) {
       return res.status(500).json({
         success: false,
-        message: error.message || "Erro inesperado no servidor",
+        message: error.message,
       });
     }
   }

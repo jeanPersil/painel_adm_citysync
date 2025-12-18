@@ -4,14 +4,11 @@ const botaoEnviar = document.getElementById("enviarInstrucoes");
 
 async function enviar_email_de_recuperacao_de_senha(email) {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/users/esqueceuSenha`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      }
-    );
+    const response = await fetch(`/api/users/esqueceuSenha`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
 
     const data = await response.json();
 

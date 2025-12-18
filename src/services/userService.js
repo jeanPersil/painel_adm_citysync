@@ -36,37 +36,36 @@ class UserService {
     };
   }
 
-  async editar_dados(nome, email, token) {
+  async editar_dados({ nome, email, senha, token }) {
     const {
       data: { user },
-      error: authError,
+      error,
     } = await supabase.auth.getUser(token);
 
-    if (authError || !user) {
-      throw new Error("Token inválido ou expirado.");
+    if (error || !user) {
+      throw new Error("Token inválido ou expirado");
     }
 
     const userId = user.id;
 
-    if (email) {
-      const { error: emailAuthError } =
-        await supabase.auth.admin.updateUserById(userId, { email: email });
+    if (email || senha) {
+      const authPayload = {};
+      if (email) authPayload.email = email;
+      if (senha) authPayload.password = senha;
 
-      if (emailAuthError) {
-        throw new Error(
-          `Erro ao atualizar e-mail de autenticação: ${emailAuthError.message}`
-        );
+      const { error: authError } = await supabase.auth.admin.updateUserById(
+        userId,
+        authPayload
+      );
+
+      if (authError) {
+        throw new Error(`Erro ao atualizar autenticação: ${authError.message}`);
       }
     }
 
     const profileUpdates = {};
-
-    if (nome) {
-      profileUpdates.nome = nome;
-    }
-    if (email) {
-      profileUpdates.email = email;
-    }
+    if (nome) profileUpdates.nome = nome;
+    if (email) profileUpdates.email = email;
 
     if (Object.keys(profileUpdates).length > 0) {
       const { error: profileError } = await supabase
@@ -75,9 +74,7 @@ class UserService {
         .eq("id", userId);
 
       if (profileError) {
-        throw new Error(
-          `Erro ao atualizar perfil (tabela users): ${profileError.message}`
-        );
+        throw new Error(`Erro ao atualizar perfil: ${profileError.message}`);
       }
     }
   }

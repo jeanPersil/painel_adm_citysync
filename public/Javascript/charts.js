@@ -24,13 +24,13 @@ const CHART_COLORS = {
 let categoriaChart, statusChart;
 
 function getTextColor() {
-  return document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#34495e';
+  return document.body.classList.contains("dark-mode") ? "#e0e0e0" : "#34495e";
 }
 
 function getGridColor() {
-  return document.body.classList.contains('dark-mode') 
-    ? 'rgba(255, 255, 255, 0.1)' 
-    : 'rgba(0, 0, 0, 0.1)';
+  return document.body.classList.contains("dark-mode")
+    ? "rgba(255, 255, 255, 0.1)"
+    : "rgba(0, 0, 0, 0.1)";
 }
 
 // Inicialização dos gráficos
@@ -39,13 +39,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   setTimeout(initCharts, 100);
 });
 
-
 function initCharts() {
   criarGraficoCategorias();
   criarGraficoStatus();
   configurarEventListenersGraficos();
 }
-
 
 function configurarEventListenersGraficos() {
   const periodoSelect = document.getElementById("periodo-select");
@@ -58,7 +56,6 @@ function configurarEventListenersGraficos() {
     });
   }
 
- 
   document.addEventListener("modoEscuroAlterado", function (e) {
     setTimeout(function () {
       if (categoriaChart) {
@@ -72,11 +69,10 @@ function configurarEventListenersGraficos() {
   });
 }
 
-
 function criarGraficoCategorias() {
   const ctx = document.getElementById("categoriaChart");
   if (!ctx) return;
-  
+
   const context = ctx.getContext("2d");
   const dados = obterDadosCategorias(7);
 
@@ -126,11 +122,11 @@ function criarGraficoCategorias() {
         tooltip: {
           mode: "index",
           intersect: false,
-          backgroundColor: document.body.classList.contains('dark-mode') 
-            ? 'rgba(30, 30, 30, 0.9)' 
-            : 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#fff',
-          bodyColor: '#fff',
+          backgroundColor: document.body.classList.contains("dark-mode")
+            ? "rgba(30, 30, 30, 0.9)"
+            : "rgba(0, 0, 0, 0.8)",
+          titleColor: "#fff",
+          bodyColor: "#fff",
           titleFont: {
             size: 14,
             weight: "bold",
@@ -157,7 +153,7 @@ function criarGraficoCategorias() {
             font: {
               size: 12,
             },
-            color: getTextColor(), 
+            color: getTextColor(),
           },
         },
         x: {
@@ -168,7 +164,7 @@ function criarGraficoCategorias() {
             font: {
               size: 12,
             },
-            color: getTextColor(), 
+            color: getTextColor(),
           },
         },
       },
@@ -183,29 +179,41 @@ function criarGraficoCategorias() {
 function criarGraficoStatus() {
   const ctx = document.getElementById("statusChart");
   if (!ctx) return;
-  
+
   const context = ctx.getContext("2d");
 
   statusChart = new Chart(context, {
     type: "doughnut",
     data: {
-      labels: ["Resolvidos", "Em Andamento", "Abertos"],
+      labels: [
+        "Resolvidos",
+        "Em Andamento",
+        "Abertos",
+        "Inválidos",
+        "Em análise",
+      ],
       datasets: [
         {
           data: [
             reports.problemasResolvidos?.length || 0,
             reports.problemasEmAndamento?.length || 0,
             reports.problemasPendentes?.length || 0,
+            reports.problemasInvalidos?.length || 0,
+            reports.problemasEmAnalise?.length || 0,
           ],
           backgroundColor: [
             CHART_COLORS.greenLight,
             CHART_COLORS.orangeLight,
             CHART_COLORS.blueLight,
+            CHART_COLORS.redLight,
+            CHART_COLORS.purpleLight,
           ],
           borderColor: [
             CHART_COLORS.green,
             CHART_COLORS.orange,
             CHART_COLORS.blue,
+            CHART_COLORS.red,
+            CHART_COLORS.purple,
           ],
           borderWidth: 1,
           hoverOffset: 10,
@@ -221,11 +229,11 @@ function criarGraficoStatus() {
           display: false,
         },
         tooltip: {
-          backgroundColor: document.body.classList.contains('dark-mode') 
-            ? 'rgba(30, 30, 30, 0.9)' 
-            : 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#fff',
-          bodyColor: '#fff',
+          backgroundColor: document.body.classList.contains("dark-mode")
+            ? "rgba(30, 30, 30, 0.9)"
+            : "rgba(0, 0, 0, 0.8)",
+          titleColor: "#fff",
+          bodyColor: "#fff",
           titleFont: {
             size: 14,
             weight: "bold",
@@ -238,7 +246,8 @@ function criarGraficoStatus() {
           callbacks: {
             label: function (context) {
               const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = total > 0 ? Math.round((context.raw / total) * 100) : 0;
+              const percentage =
+                total > 0 ? Math.round((context.raw / total) * 100) : 0;
               return `${context.label}: ${context.raw} (${percentage}%)`;
             },
           },
@@ -260,12 +269,26 @@ function criarLegendaPersonalizada() {
   const legendContainer = document.getElementById("pieLegend");
   if (!legendContainer) return;
 
-  const labels = ["Resolvidos", "Em Andamento", "Abertos"];
-  const colors = [CHART_COLORS.green, CHART_COLORS.orange, CHART_COLORS.blue];
+  const labels = [
+    "Resolvidos",
+    "Em Andamento",
+    "Abertos",
+    "Inválidos",
+    "Em análise",
+  ];
+  const colors = [
+    CHART_COLORS.green,
+    CHART_COLORS.orange,
+    CHART_COLORS.blue,
+    CHART_COLORS.red,
+    CHART_COLORS.purple,
+  ];
   const values = [
     reports.problemasResolvidos?.length || 0,
     reports.problemasEmAndamento?.length || 0,
     reports.problemasPendentes?.length || 0,
+    reports.problemasInvalidos?.length || 0,
+    reports.problemasEmAnalise?.length || 0,
   ];
 
   const total = values.reduce((a, b) => a + b, 0);
@@ -273,7 +296,8 @@ function criarLegendaPersonalizada() {
   let legendHTML = '<div class="custom-legend">';
 
   labels.forEach((label, index) => {
-    const percentage = total > 0 ? Math.round((values[index] / total) * 100) : 0;
+    const percentage =
+      total > 0 ? Math.round((values[index] / total) * 100) : 0;
     legendHTML += `
       <div class="legend-item">
         <span class="legend-color" style="background-color: ${colors[index]}"></span>
@@ -292,6 +316,8 @@ function obterDadosCategorias(dias) {
     ...(reports.problemasResolvidos || []),
     ...(reports.problemasEmAndamento || []),
     ...(reports.problemasPendentes || []),
+    ...(reports.problemasEmAnalise || []),
+    ...(reports.problemasInvalidos || []),
   ];
 
   const contagem = {};
@@ -306,7 +332,6 @@ function obterDadosCategorias(dias) {
   return { labels, valores };
 }
 
-
 function atualizarGraficoCategorias(dias) {
   const chartContainer = document.querySelector(".main-chart");
   if (chartContainer) {
@@ -319,12 +344,11 @@ function atualizarGraficoCategorias(dias) {
     if (categoriaChart) {
       categoriaChart.data.labels = novosDados.labels;
       categoriaChart.data.datasets[0].data = novosDados.valores;
-      
-      
+
       categoriaChart.options.scales.x.ticks.color = getTextColor();
       categoriaChart.options.scales.y.ticks.color = getTextColor();
       categoriaChart.options.scales.y.grid.color = getGridColor();
-      
+
       categoriaChart.update();
     }
 

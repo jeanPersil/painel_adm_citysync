@@ -40,10 +40,20 @@ class ReportService {
       (r) => r.nome_status === "Pendente"
     );
 
+    const problemasEmAnalise = reports.filter(
+      (r) => r.nome_status == "Em analise"
+    );
+
+    const problemasInvalidos = reports.filter(
+      (r) => r.nome_status === "Invalido"
+    );
+
     return {
       problemasResolvidos,
       problemasEmAndamento,
       problemasPendentes,
+      problemasEmAnalise,
+      problemasInvalidos,
       total: reports.length,
     };
   }

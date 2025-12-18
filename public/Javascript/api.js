@@ -166,7 +166,7 @@ class Api {
     return null;
   }
 
-  async editar_dados(novoNome, novoEmail) {
+  async editar_dados(novoNome, novoEmail, novaSenha) {
     try {
       const response = await fetch(`${this.url_api}/users/atualizar_dados`, {
         method: "PUT",
@@ -174,7 +174,7 @@ class Api {
           "Content-Type": "application/json",
         },
 
-        body: JSON.stringify({ novoNome, novoEmail }),
+        body: JSON.stringify({ novoNome, novoEmail, novaSenha }),
 
         credentials: "include",
       });

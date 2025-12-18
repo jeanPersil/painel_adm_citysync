@@ -1,153 +1,159 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perfil do Usuário • CitySync</title>
-  <link rel="stylesheet" href="/CSS/user.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="dashboard-container">
-
-    <!-- Sidebar -->
-    <aside class="barra-lateral">
-      <div class="barra-lateral-header">
-        <h2><i class="fas fa-city"></i> CitySync</h2>
-      </div>
-      <nav class="barra-lateral-nav">
-        <a href="/dashboard" class="nav-item">
-          <i class="fa-solid fa-chart-line"></i><span>Dashboard</span>
-        </a>
-        <a href="/gestao" class="nav-item">
-          <i class="fa-solid fa-file-alt"></i><span>Reports</span>
-        </a>
-        <a href="/usuario" class="nav-item active">
-          <i class="fa-solid fa-user"></i><span>Usuário</span>
-        </a>
-        <a href="/configuracao" class="nav-item">
-          <i class="fa-solid fa-gear"></i><span>Configurações</span>
-        </a>
-      </nav>
-      <div class="barra-lateral-footer">
-        <div class="modo-toggle">
-          <span>Modo Escuro</span>
-          <label class="switch">
-            <input type="checkbox" id="dark-mode-toggle">
-            <span class="slider round"></span>
-          </label>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfil do Usuário • CitySync</title>
+    <link rel="stylesheet" href="/CSS/user.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Sidebar -->
+      <aside class="barra-lateral">
+        <div class="barra-lateral-header">
+          <h2><i class="fas fa-city"></i> CitySync</h2>
         </div>
-        <a href="#" id="btnSair" class="logout-btn">
-          <i class="fa-solid fa-right-from-bracket"></i><span>Sair</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="conteudo-principal">
-
-      <!-- Header -->
-      <header class="main-header">
-        <div class="header-left">
-          <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-          <h1>Perfil do Usuário</h1>
+        <nav class="barra-lateral-nav">
+          <a href="/dashboard" class="nav-item">
+            <i class="fa-solid fa-chart-line"></i><span>Dashboard</span>
+          </a>
+          <a href="/gestao" class="nav-item">
+            <i class="fa-solid fa-file-alt"></i><span>Reports</span>
+          </a>
+          <a href="/usuario" class="nav-item active">
+            <i class="fa-solid fa-user"></i><span>Usuário</span>
+          </a>
+          <a href="/configuracao" class="nav-item">
+            <i class="fa-solid fa-gear"></i><span>Configurações</span>
+          </a>
+        </nav>
+        <div class="barra-lateral-footer">
+          <div class="modo-toggle">
+            <span>Modo Escuro</span>
+            <label class="switch">
+              <input type="checkbox" id="dark-mode-toggle" />
+              <span class="slider round"></span>
+            </label>
+          </div>
+          <a href="#" id="btnSair" class="logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i><span>Sair</span>
+          </a>
         </div>
-        <div class="header-right">
-          <div class="perfil-usuario">
-            
-            <span class="profile-name">Iwin Lima</span>
+      </aside>
+
+      <!-- Main content -->
+      <main class="conteudo-principal">
+        <!-- Header -->
+        <header class="main-header">
+          <div class="header-left">
+            <button class="menu-toggle" id="menuToggle">
+              <i class="fas fa-bars"></i>
+            </button>
+            <h1>Perfil do Usuário</h1>
           </div>
+          <div class="header-right">
+            <div class="perfil-usuario">
+              <span class="profile-name">Iwin Lima</span>
+            </div>
+          </div>
+        </header>
+
+        <div class="dashboard-content profile-content">
+          <!-- Card com avatar -->
+          <section class="profile-card animated fade-in">
+            <div class="avatar-wrapper">
+              <i class="fa-solid fa-user-circle profile-avatar-lg"></i>
+            </div>
+            <h2>Iwin Lima Borges</h2>
+            <p class="role">Administrador</p>
+          </section>
+
+          <!-- Estatísticas rápidas -->
+          <section class="profile-stats animated slide-up">
+            <div class="stat-card">
+              <i class="fas fa-file-alt"></i>
+              <span class="stat-value">52</span>
+              <p>Reports Criados</p>
+            </div>
+            <div class="stat-card">
+              <i class="fas fa-check-circle"></i>
+              <span class="stat-value">38</span>
+              <p>Resolvidos</p>
+            </div>
+          </section>
+
+          <!-- Área com tabs -->
+          <section class="profile-tabs animated fade-in">
+            <div class="tabs">
+              <button class="tab active" data-tab="detalhes">Detalhes</button>
+              <button class="tab" data-tab="atividades">Atividades</button>
+            </div>
+
+            <!-- Conteúdo tabs -->
+            <div class="tab-content active" id="detalhes">
+              <form>
+                <div class="form-group">
+                  <label for="name">Nome:</label>
+                  <input type="text" id="name" value="Iwin Lima Borges" />
+                </div>
+                <div class="form-group">
+                  <label for="email">E-mail:</label>
+                  <input type="email" id="email" value="iwin@email.com" />
+                </div>
+                <div class="form-group">
+                  <label for="password">Senha:</label>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Preencha apenas se quiser alterar sua senha"
+                  />
+                </div>
+                <button type="submit" class="action-btn">
+                  <i class="fas fa-save"></i> Salvar Alterações
+                </button>
+              </form>
+            </div>
+
+            <div class="tab-content" id="atividades">
+              <ul class="activity-list">
+                <li>
+                  <i class="fas fa-check text-green"></i>
+                  <span>Report #123 resolvido</span>
+                  <span class="time">2h atrás</span>
+                </li>
+                <li>
+                  <i class="fas fa-plus text-blue"></i>
+                  <span>Novo report criado</span>
+                  <span class="time">5h atrás</span>
+                </li>
+                <li>
+                  <i class="fas fa-user text-purple"></i>
+                  <span>Atualizou informações de perfil</span>
+                  <span class="time">Ontem</span>
+                </li>
+              </ul>
+            </div>
+          </section>
         </div>
-      </header>
 
-  
-      <div class="dashboard-content profile-content">
+        <!-- Footer -->
+        <footer class="main-footer">
+          <p>© 2025 CitySync - Sistema de Gestão de Problemas Urbanos</p>
+        </footer>
+      </main>
+    </div>
 
-        <!-- Card com avatar -->
-        <section class="profile-card animated fade-in">
-          <div class="avatar-wrapper">
-            <i class="fa-solid fa-user-circle profile-avatar-lg"></i>
-          </div>
-          <h2>Iwin Lima Borges</h2>
-          <p class="role">Administrador</p>
-        </section>
-
-        <!-- Estatísticas rápidas -->
-        <section class="profile-stats animated slide-up">
-          <div class="stat-card">
-            <i class="fas fa-file-alt"></i>
-            <span class="stat-value">52</span>
-            <p>Reports Criados</p>
-          </div>
-          <div class="stat-card">
-            <i class="fas fa-check-circle"></i>
-            <span class="stat-value">38</span>
-            <p>Resolvidos</p>
-          </div>
-        </section>
-
-        <!-- Área com tabs -->
-        <section class="profile-tabs animated fade-in">
-          <div class="tabs">
-            <button class="tab active" data-tab="detalhes">Detalhes</button>
-            <button class="tab" data-tab="atividades">Atividades</button>
-          </div>
-
-          <!-- Conteúdo tabs -->
-          <div class="tab-content active" id="detalhes">
-            <form>
-              <div class="form-group">
-                <label for="name">Nome:</label>
-                <input type="text" id="name" value="Iwin Lima Borges">
-              </div>
-              <div class="form-group">
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" value="iwin@email.com">
-              </div>
-              <div class="form-group">
-                <label for="password">Senha:</label>
-                <input type="password" id="password" placeholder="••••••••">
-              </div>
-              <button type="submit" class="action-btn">
-                <i class="fas fa-save"></i> Salvar Alterações
-              </button>
-            </form>
-          </div>
-
-          <div class="tab-content" id="atividades">
-            <ul class="activity-list">
-              <li>
-                <i class="fas fa-check text-green"></i>
-                <span>Report #123 resolvido</span>
-                <span class="time">2h atrás</span>
-              </li>
-              <li>
-                <i class="fas fa-plus text-blue"></i>
-                <span>Novo report criado</span>
-                <span class="time">5h atrás</span>
-              </li>
-              <li>
-                <i class="fas fa-user text-purple"></i>
-                <span>Atualizou informações de perfil</span>
-                <span class="time">Ontem</span>
-              </li>
-            </ul>
-          </div>
-        </section>
-      </div>
-
-
-      <!-- Footer -->
-      <footer class="main-footer">
-        <p>© 2025 CitySync - Sistema de Gestão de Problemas Urbanos</p>
-      </footer>
-    </main>
-  </div>
-
-  <script type="module" src="/Javascript/utils.js"></script>
-  <script type="module" src="/Javascript/usuario.js"></script>
-</body>
+    <script type="module" src="/Javascript/utils.js"></script>
+    <script type="module" src="/Javascript/usuario.js"></script>
+  </body>
 </html>

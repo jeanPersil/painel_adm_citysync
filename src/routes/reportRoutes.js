@@ -17,7 +17,7 @@ import middleware from "../middleware/authMiddleware.js";
 import reportsController from "../controller/reports_controller.js";
 
 const router = express.Router();
-const { verificar_autenticacao, verificarAdmin } = middleware;
+//const { verificar_autenticacao, verificarAdmin } = middleware;
 
 //router.use(verificar_autenticacao, verificarAdmin);
 
